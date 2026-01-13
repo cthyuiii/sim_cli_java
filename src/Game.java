@@ -23,9 +23,9 @@ public class Game {
         System.out.println("╔════════════════════════════════════════╗");
         System.out.println("║                                        ║");
         System.out.println("║        TEXT-BASED SIMS GAME            ║");
-        System.out.println("║          Enhanced Edition              ║");
+        System.out.println("║       Family & Career Edition          ║");
         System.out.println("║                                        ║");
-        System.out.println("║     Manage your Sim's daily life!      ║");
+        System.out.println("║   Manage your Sim's life and family!   ║");
         System.out.println("║                                        ║");
         System.out.println("╚════════════════════════════════════════╝");
         System.out.println("\n");
@@ -39,7 +39,7 @@ public class Game {
         }
         character = new SimCharacter(name);
         System.out.println("\nWelcome, " + name + "! Your new life begins now.");
-        System.out.println("Keep your needs balanced to survive and thrive!");
+        System.out.println("Keep your needs balanced, build a career, and start a family!");
     }
 
     private void selectCareer() {
@@ -120,7 +120,10 @@ public class Game {
         System.out.println("║  7. Work (Earn Money)                  ║");
         System.out.println("║  8. Exercise                           ║");
         System.out.println("║  9. Change Career                      ║");
-        System.out.println("║  10. View Status                       ║");
+        System.out.println("║  10. Try for Baby                      ║");
+        System.out.println("║  11. Care for Children                 ║");
+        System.out.println("║  12. View Family                       ║");
+        System.out.println("║  13. View Status                       ║");
         System.out.println("║  0. Quit Game                          ║");
         System.out.println("╚════════════════════════════════════════╝");
         System.out.print("\nChoose an action: ");
@@ -158,6 +161,15 @@ public class Game {
                 handleChangeCareer();
                 break;
             case "10":
+                character.tryForBaby();
+                break;
+            case "11":
+                character.careForChildren();
+                break;
+            case "12":
+                character.viewFamily();
+                break;
+            case "13":
                 // Status will be displayed at the start of next loop
                 break;
             case "0":
@@ -169,7 +181,7 @@ public class Game {
                 break;
         }
 
-        if (running && character.isAlive() && !input.equals("10")) {
+        if (running && character.isAlive() && !input.equals("13") && !input.equals("12")) {
             System.out.println("\nPress Enter to continue...");
             scanner.nextLine();
         }
@@ -233,6 +245,10 @@ public class Game {
             if (character.hasCareer()) {
                 System.out.println("Final career: " + character.getCareer().getCurrentTitle());
                 System.out.println("Career level: " + character.getCareer().getLevel() + "/3");
+            }
+            if (character.getChildCount() > 0) {
+                System.out.println("Children: " + character.getChildCount());
+                System.out.println("\nYour legacy lives on through your children!");
             }
             System.out.println("\nBetter luck next time!");
         }

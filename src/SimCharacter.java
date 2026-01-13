@@ -1,4 +1,6 @@
 import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimCharacter {
     private String name;
@@ -15,6 +17,10 @@ public class SimCharacter {
     private String currentMood;
     private Career career;
     private double moodMultiplier; // Affects how fast needs degrade
+    private List<Child> children;
+    private boolean isPregnant;
+    private int pregnancyDay;
+    private static final int PREGNANCY_DURATION = 3; // 3 days
 
     public SimCharacter(String name) {
         this.name = name;
@@ -29,6 +35,9 @@ public class SimCharacter {
         this.isAlive = true;
         this.random = new Random();
         this.career = null;
+        this.children = new ArrayList<>();
+        this.isPregnant = false;
+        this.pregnancyDay = 0;
         updateMood();
     }
 
@@ -46,6 +55,9 @@ public class SimCharacter {
     public String getCurrentMood() { return currentMood; }
     public Career getCareer() { return career; }
     public boolean hasCareer() { return career != null; }
+    public List<Child> getChildren() { return children; }
+    public boolean isPregnant() { return isPregnant; }
+    public int getChildCount() { return children.size(); }
 
     public void setCareer(Career career) {
         this.career = career;
@@ -96,10 +108,24 @@ public class SimCharacter {
 
     // Time management with mood-affected degradation
     public void passTime(int hours) {
+        int previousDay = currentDay;
+        
         currentHour += hours;
         while (currentHour >= 24) {
             currentHour -= 24;
             currentDay++;
+        }
+        
+        // Check for pregnancy completion
+        if (isPregnant && currentDay >= pregnancyDay + PREGNANCY_DURATION) {
+            giveBirth();
+        }
+        
+        // Update children ages if day changed
+        if (currentDay > previousDay) {
+            for (Child child : children) {
+                child.updateAge(currentDay);
+            }
         }
         
         // Needs degrade over time, affected by mood
@@ -114,8 +140,129 @@ public class SimCharacter {
             energy = Math.max(0, energy - (hours * 5));
         }
         
+        // Children requiring care drain energy faster
+        int babiesNeedingCare = 0;
+        for (Child child : children) {
+            if (child.needsCare()) {
+                babiesNeedingCare++;
+            }
+        }
+        if (babiesNeedingCare > 0) {
+            energy = Math.max(0, energy - (hours * babiesNeedingCare * 2));
+        }
+        
         updateMood();
         checkVitals();
+    }
+
+    // Family and procreation methods
+    public void tryForBaby() {
+        if (isPregnant) {
+            System.out.println(name + " is already pregnant!");
+            return;
+        }
+        
+        if (children.size() >= 5) {
+            System.out.println("You already have 5 children! That's enough for now.");
+            return;
+        }
+        
+        if (money < 100) {
+            System.out.println("Not enough money! Having a baby costs $100.");
+            return;
+        }
+        
+        if (social < 50 || energy < 40) {
+            System.out.println("You need at least 50 social and 40 energy to try for a baby!");
+            return;
+        }
+        
+        money -= 100;
+        social = Math.min(100, social + 20);
+        fun = Math.min(100, fun + 15);
+        energy = Math.max(0, energy - 15);
+        passTime(2);
+        
+        // 70% chance of conception
+        if (random.nextInt(100) < 70) {
+            isPregnant = true;
+            pregnancyDay = currentDay;
+            System.out.println("\n🎉 Great news! " + name + " is pregnant!");
+            System.out.println("The baby will arrive in " + PREGNANCY_DURATION + " days.");
+        } else {
+            System.out.println(name + " tried for a baby, but no luck this time. Try again!");
+        }
+    }
+    
+    private void giveBirth() {
+        isPregnant = false;
+        String babyName = "Baby " + (children.size() + 1);
+        Child newChild = new Child(babyName, currentDay);
+        children.add(newChild);
+        
+        System.out.println("\n👶 CONGRATULATIONS! " + name + " gave birth to " + babyName + "!");
+        System.out.println("Your family is growing!");
+        
+        // Birth affects needs
+        energy = Math.max(0, energy - 30);
+        hunger = Math.max(0, hunger - 20);
+        social = Math.min(100, social + 30);
+    }
+    
+    public void careForChildren() {
+        int childrenNeedingCare = 0;
+        for (Child child : children) {
+            if (child.needsCare()) {
+                childrenNeedingCare++;
+            }
+        }
+        
+        if (childrenNeedingCare == 0) {
+            System.out.println("No children need care right now!");
+            return;
+        }
+        
+        if (energy < 20) {
+            System.out.println(name + " is too tired to care for children!");
+            return;
+        }
+        
+        energy = Math.max(0, energy - 15);
+        social = Math.min(100, social + 20);
+        fun = Math.min(100, fun + 10);
+        passTime(2);
+        
+        System.out.println(name + " spent quality time caring for " + childrenNeedingCare + 
+                         " child" + (childrenNeedingCare > 1 ? "ren" : "") + "!");
+        System.out.println("Fed, changed, and played with the little ones. They're happy!");
+    }
+    
+    public void viewFamily() {
+        if (children.isEmpty() && !isPregnant) {
+            System.out.println("\n" + name + " has no children yet.");
+            System.out.println("Use 'Try for Baby' to start a family!");
+            return;
+        }
+        
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║           FAMILY STATUS                ║");
+        System.out.println("╚════════════════════════════════════════╝");
+        
+        if (isPregnant) {
+            int daysLeft = PREGNANCY_DURATION - (currentDay - pregnancyDay);
+            System.out.println("🤰 " + name + " is pregnant! Baby arrives in " + daysLeft + " day(s)");
+            System.out.println();
+        }
+        
+        if (!children.isEmpty()) {
+            System.out.println("Children (" + children.size() + "):");
+            System.out.println("----------------------------------------");
+            for (Child child : children) {
+                System.out.println(child.getInfo());
+            }
+        }
+        
+        System.out.println();
     }
 
     // Activities
@@ -256,6 +403,21 @@ public class SimCharacter {
         System.out.println("Day: " + currentDay + " | Time: " + formatTime());
         System.out.println("Money: $" + money);
         System.out.println("Mood: " + getMoodEmoji() + " " + currentMood);
+        
+        if (isPregnant) {
+            int daysLeft = PREGNANCY_DURATION - (currentDay - pregnancyDay);
+            System.out.println("🤰 Pregnant (Baby in " + daysLeft + " day" + (daysLeft != 1 ? "s" : "") + ")");
+        }
+        
+        if (!children.isEmpty()) {
+            int needingCare = 0;
+            for (Child child : children) {
+                if (child.needsCare()) needingCare++;
+            }
+            System.out.println("👨‍👩‍👧‍👦 Children: " + children.size() + 
+                             (needingCare > 0 ? " (" + needingCare + " need care)" : ""));
+        }
+        
         System.out.println("----------------------------------------");
         System.out.println("Hunger:  " + getBar(hunger) + " " + hunger + "%");
         System.out.println("Energy:  " + getBar(energy) + " " + energy + "%");
