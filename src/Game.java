@@ -13,6 +13,7 @@ public class Game {
     public void start() {
         displayWelcome();
         createCharacter();
+        selectCareer();
         gameLoop();
         displayGameOver();
     }
@@ -22,6 +23,7 @@ public class Game {
         System.out.println("╔════════════════════════════════════════╗");
         System.out.println("║                                        ║");
         System.out.println("║        TEXT-BASED SIMS GAME            ║");
+        System.out.println("║          Enhanced Edition              ║");
         System.out.println("║                                        ║");
         System.out.println("║     Manage your Sim's daily life!      ║");
         System.out.println("║                                        ║");
@@ -38,6 +40,61 @@ public class Game {
         character = new SimCharacter(name);
         System.out.println("\nWelcome, " + name + "! Your new life begins now.");
         System.out.println("Keep your needs balanced to survive and thrive!");
+    }
+
+    private void selectCareer() {
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║          CHOOSE YOUR CAREER            ║");
+        System.out.println("╠════════════════════════════════════════╣");
+        System.out.println("║  1. Fast Food Worker                   ║");
+        System.out.println("║     • Starting Pay: $40/shift (4h)     ║");
+        System.out.println("║     • Easy work, quick money           ║");
+        System.out.println("║                                        ║");
+        System.out.println("║  2. Office Worker                      ║");
+        System.out.println("║     • Starting Pay: $60/shift (6h)     ║");
+        System.out.println("║     • Balanced career path             ║");
+        System.out.println("║                                        ║");
+        System.out.println("║  3. Programmer                         ║");
+        System.out.println("║     • Starting Pay: $80/shift (5h)     ║");
+        System.out.println("║     • High pay, good hours             ║");
+        System.out.println("║                                        ║");
+        System.out.println("║  4. Artist                             ║");
+        System.out.println("║     • Starting Pay: $50/shift (4h)     ║");
+        System.out.println("║     • Creative and flexible            ║");
+        System.out.println("║                                        ║");
+        System.out.println("║  5. Doctor                             ║");
+        System.out.println("║     • Starting Pay: $90/shift (8h)     ║");
+        System.out.println("║     • Highest pay, longest hours       ║");
+        System.out.println("╚════════════════════════════════════════╝");
+        System.out.print("\nChoose your career (1-5): ");
+        
+        String choice = scanner.nextLine().trim();
+        Career career = null;
+        
+        switch (choice) {
+            case "1":
+                career = new Career("Fast Food");
+                break;
+            case "2":
+                career = new Career("Office");
+                break;
+            case "3":
+                career = new Career("Programmer");
+                break;
+            case "4":
+                career = new Career("Artist");
+                break;
+            case "5":
+                career = new Career("Doctor");
+                break;
+            default:
+                System.out.println("Invalid choice. Defaulting to Fast Food Worker.");
+                career = new Career("Fast Food");
+        }
+        
+        character.setCareer(career);
+        System.out.println("\nYou are now a " + career.getCurrentTitle() + "!");
+        System.out.println("Work hard to get promotions and earn more money.");
         System.out.println("\nPress Enter to continue...");
         scanner.nextLine();
     }
@@ -62,7 +119,8 @@ public class Game {
         System.out.println("║  6. Watch TV                           ║");
         System.out.println("║  7. Work (Earn Money)                  ║");
         System.out.println("║  8. Exercise                           ║");
-        System.out.println("║  9. View Status                        ║");
+        System.out.println("║  9. Change Career                      ║");
+        System.out.println("║  10. View Status                       ║");
         System.out.println("║  0. Quit Game                          ║");
         System.out.println("╚════════════════════════════════════════╝");
         System.out.print("\nChoose an action: ");
@@ -97,6 +155,9 @@ public class Game {
                 character.exercise();
                 break;
             case "9":
+                handleChangeCareer();
+                break;
+            case "10":
                 // Status will be displayed at the start of next loop
                 break;
             case "0":
@@ -108,7 +169,7 @@ public class Game {
                 break;
         }
 
-        if (running && character.isAlive() && !input.equals("9")) {
+        if (running && character.isAlive() && !input.equals("10")) {
             System.out.println("\nPress Enter to continue...");
             scanner.nextLine();
         }
@@ -149,6 +210,19 @@ public class Game {
         }
     }
 
+    private void handleChangeCareer() {
+        System.out.println("\n⚠ Changing careers will reset your career progress!");
+        System.out.print("Are you sure? (yes/no): ");
+        String confirm = scanner.nextLine().trim().toLowerCase();
+        
+        if (confirm.equals("yes") || confirm.equals("y")) {
+            System.out.println("\nYou quit your job as a " + character.getCareer().getCurrentTitle() + ".");
+            selectCareer();
+        } else {
+            System.out.println("Career change cancelled.");
+        }
+    }
+
     private void displayGameOver() {
         if (!character.isAlive()) {
             System.out.println("\n╔════════════════════════════════════════╗");
@@ -156,6 +230,10 @@ public class Game {
             System.out.println("╚════════════════════════════════════════╝");
             System.out.println("\nYour Sim survived for " + character.getCurrentDay() + " days.");
             System.out.println("Final money: $" + character.getMoney());
+            if (character.hasCareer()) {
+                System.out.println("Final career: " + character.getCareer().getCurrentTitle());
+                System.out.println("Career level: " + character.getCareer().getLevel() + "/3");
+            }
             System.out.println("\nBetter luck next time!");
         }
     }

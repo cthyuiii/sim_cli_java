@@ -12,6 +12,9 @@ public class SimCharacter {
     private int currentDay;
     private boolean isAlive;
     private Random random;
+    private String currentMood;
+    private Career career;
+    private double moodMultiplier; // Affects how fast needs degrade
 
     public SimCharacter(String name) {
         this.name = name;
@@ -25,6 +28,8 @@ public class SimCharacter {
         this.currentDay = 1;
         this.isAlive = true;
         this.random = new Random();
+        this.career = null;
+        updateMood();
     }
 
     // Getters
@@ -38,8 +43,58 @@ public class SimCharacter {
     public int getCurrentHour() { return currentHour; }
     public int getCurrentDay() { return currentDay; }
     public boolean isAlive() { return isAlive; }
+    public String getCurrentMood() { return currentMood; }
+    public Career getCareer() { return career; }
+    public boolean hasCareer() { return career != null; }
 
-    // Time management
+    public void setCareer(Career career) {
+        this.career = career;
+    }
+
+    // Mood calculation based on all needs
+    private void updateMood() {
+        int averageNeeds = (hunger + energy + hygiene + social + fun) / 5;
+        
+        // Special case: Icky mood when hygiene is critically low
+        if (hygiene < 20) {
+            currentMood = "Icky";
+            moodMultiplier = 1.8; // Needs degrade 80% faster
+            return;
+        }
+        
+        // Calculate mood based on average needs
+        if (averageNeeds >= 80) {
+            currentMood = "Ecstatic";
+            moodMultiplier = 0.7; // Needs degrade 30% slower
+        } else if (averageNeeds >= 60) {
+            currentMood = "Happy";
+            moodMultiplier = 0.9; // Needs degrade 10% slower
+        } else if (averageNeeds >= 40) {
+            currentMood = "Content";
+            moodMultiplier = 1.0; // Normal degradation
+        } else if (averageNeeds >= 25) {
+            currentMood = "Uncomfortable";
+            moodMultiplier = 1.3; // Needs degrade 30% faster
+        } else {
+            currentMood = "Miserable";
+            moodMultiplier = 1.6; // Needs degrade 60% faster
+        }
+    }
+
+    // Get mood emoji
+    private String getMoodEmoji() {
+        switch (currentMood) {
+            case "Ecstatic": return "😄";
+            case "Happy": return "😊";
+            case "Content": return "🙂";
+            case "Uncomfortable": return "😟";
+            case "Miserable": return "😢";
+            case "Icky": return "🤢";
+            default: return "😐";
+        }
+    }
+
+    // Time management with mood-affected degradation
     public void passTime(int hours) {
         currentHour += hours;
         while (currentHour >= 24) {
@@ -47,13 +102,19 @@ public class SimCharacter {
             currentDay++;
         }
         
-        // Needs degrade over time
-        hunger = Math.max(0, hunger - (hours * 5));
-        energy = Math.max(0, energy - (hours * 3));
-        hygiene = Math.max(0, hygiene - (hours * 2));
-        social = Math.max(0, social - (hours * 2));
-        fun = Math.max(0, fun - (hours * 2));
+        // Needs degrade over time, affected by mood
+        hunger = Math.max(0, hunger - (int)(hours * 5 * moodMultiplier));
+        energy = Math.max(0, energy - (int)(hours * 3 * moodMultiplier));
+        hygiene = Math.max(0, hygiene - (int)(hours * 2 * moodMultiplier));
+        social = Math.max(0, social - (int)(hours * 2 * moodMultiplier));
+        fun = Math.max(0, fun - (int)(hours * 2 * moodMultiplier));
         
+        // Special effect: Icky mood drains energy faster
+        if (currentMood.equals("Icky")) {
+            energy = Math.max(0, energy - (hours * 5));
+        }
+        
+        updateMood();
         checkVitals();
     }
 
@@ -112,6 +173,11 @@ public class SimCharacter {
         energy = Math.max(0, energy - 5);
         passTime(1);
         System.out.println(name + " took a shower. Feeling clean!");
+        
+        // Special message if recovering from Icky mood
+        if (hygiene >= 40) {
+            System.out.println("Much better! No longer feeling icky.");
+        }
     }
 
     public void socialize() {
@@ -137,17 +203,24 @@ public class SimCharacter {
     }
 
     public void work() {
-        if (energy < 30) {
-            System.out.println(name + " is too tired to work!");
+        if (career == null) {
+            System.out.println("You need to choose a career first!");
             return;
         }
-        int earnings = 50 + random.nextInt(51); // $50-$100
+        
+        int requiredEnergy = 30 + (career.getWorkHours() - 4) * 5; // More energy for longer shifts
+        if (energy < requiredEnergy) {
+            System.out.println(name + " is too tired to work! (Need " + requiredEnergy + "+ energy)");
+            return;
+        }
+        
+        int earnings = career.work();
         money += earnings;
-        energy = Math.max(0, energy - 25);
+        energy = Math.max(0, energy - (career.getWorkHours() * 5));
         fun = Math.max(0, fun - 10);
-        hunger = Math.max(0, hunger - 15);
-        passTime(4);
-        System.out.println(name + " worked hard and earned $" + earnings + "!");
+        hunger = Math.max(0, hunger - (career.getWorkHours() * 3));
+        passTime(career.getWorkHours());
+        System.out.println(name + " worked as a " + career.getCurrentTitle() + " and earned $" + earnings + "!");
     }
 
     public void exercise() {
@@ -182,15 +255,26 @@ public class SimCharacter {
         System.out.println("========================================");
         System.out.println("Day: " + currentDay + " | Time: " + formatTime());
         System.out.println("Money: $" + money);
+        System.out.println("Mood: " + getMoodEmoji() + " " + currentMood);
         System.out.println("----------------------------------------");
         System.out.println("Hunger:  " + getBar(hunger) + " " + hunger + "%");
         System.out.println("Energy:  " + getBar(energy) + " " + energy + "%");
         System.out.println("Hygiene: " + getBar(hygiene) + " " + hygiene + "%");
         System.out.println("Social:  " + getBar(social) + " " + social + "%");
         System.out.println("Fun:     " + getBar(fun) + " " + fun + "%");
-        System.out.println("========================================\n");
+        System.out.println("========================================");
+        
+        if (career != null) {
+            System.out.println("\n--- Career Info ---");
+            System.out.println(career.getCareerInfo());
+            System.out.println("========================================");
+        }
+        System.out.println();
         
         // Warnings
+        if (currentMood.equals("Icky")) {
+            System.out.println("🤢 WARNING: Feeling ICKY! Hygiene is terrible and energy is draining fast!");
+        }
         if (hunger < 30) System.out.println("⚠ WARNING: " + name + " is very hungry!");
         if (energy < 30) System.out.println("⚠ WARNING: " + name + " is exhausted!");
         if (hygiene < 30) System.out.println("⚠ WARNING: " + name + " needs a shower!");
