@@ -1,4 +1,4 @@
-package simsgame;
+package simsgame.sims;
 import simsgame.career.*;
 
 public class SimCharacter {

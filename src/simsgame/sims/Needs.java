@@ -1,4 +1,4 @@
-package simsgame;
+package simsgame.sims;
 public class Needs {
     private int hunger;
     private int energy;

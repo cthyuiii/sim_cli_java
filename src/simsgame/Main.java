@@ -1,5 +1,5 @@
 package simsgame;
 
-public class Child {
+public class Main {
     
 }

@@ -1,4 +1,4 @@
-package simsgame;
+package simsgame.sims;
 public class Mood {
     public enum moodState {
         HAPPY, MISERABLE, STARVING, EXHAUSTED, LONELY
