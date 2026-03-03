@@ -1,0 +1,59 @@
+OOP
+1) Core game loop + menus (Controller)
+Owner: 1 person
+Files: Game.java
+Deliverables:
+ • Main loop (start → menu → select sim → choose action → repeat)
+ • Multiple menu screens (main / sim select / activities / career / family / stats)
+ • Input validation + “back” navigation
+
+2) SimCharacter + status dashboard (Domain model)
+Owner: 1 person
+Files: SimCharacter.java
+Deliverables:
+ • Fields: Needs, Mood, Wallet, Family, Career (optional)
+ • perform(Activity, Game) method (delegation)
+ • displayStatus() formatting for CLI
+ • Getters/setters needed for other systems
+
+3) Time + global tick updates (Simulation rules)
+Owner: 1 person
+Files: Time.java (and any helper methods in Game)
+Deliverables:
+ • advance(hours) and day/hour rollover
+ • When time advances: apply “per tick” updates across all Sims (e.g., needs decay, mood update)
+ • “New day” handling hook (if needed for family/child aging)
+
+4) Needs + Mood + Wallet (Core systems)
+Owner: 1 person (or split into 2)
+Files: Needs.java, Mood.java, Wallet.java
+Deliverables:
+ • Needs values + decay rules, critical checks
+ • Mood calculation from needs (and any modifiers)
+ • Wallet earn/spend with safety checks (no negative spend)
+
+5) Activities framework + concrete activities (Polymorphism)
+Owner: 1–2 people
+Files: Activity.java, AbstractActivity.java, plus each activity file
+Deliverables:
+ • Activity interface contract (name, hours, apply)
+ • Implement: Eat, Sleep, Shower, Socialise, Play, Work
+ • Ensure each activity updates needs/wallet appropriately and integrates with SimCharacter.perform
+
+
+6) Career system + promotion config (Inheritance + composition)
+Owner: 1–2 people
+Files: Career.java, CareerPromotion.java, ShiftJob.java, FixedTimeJob.java, CommissionJob.java
+Deliverables:
+ • Career.work(sim) template method calling getWorkHours + calculatePay + promotion check
+ • CareerPromotion data accessors (titles/pay/requirements)
+ • Implement 3 job types with different pay/hour logic
+ • Career assignment/change flow (from Game menu)
+
+7) Family + Child mechanics (Lifecycle features)
+Owner: 1 person
+Files: Family.java, Child.java
+Deliverables:
+ • tryForBaby, pregnancy tracking, birth event
+ • child aging logic (and “needs care” checks if you use it)
+ • Optional: child “grows up” → becomes a new Sim (adds to Game’s sim list)
