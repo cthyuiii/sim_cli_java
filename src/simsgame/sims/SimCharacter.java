@@ -1,6 +1,5 @@
 package simsgame.sims;
 import simsgame.career.*;
-import simsgame.activity.*;
 
 public class SimCharacter {
     private String name;
