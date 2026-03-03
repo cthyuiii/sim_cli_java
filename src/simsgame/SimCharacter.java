@@ -1,3 +1,6 @@
+package simsgame;
+import simsgame.career.*;
+
 public class SimCharacter {
     private String name;
     private Needs needs;
