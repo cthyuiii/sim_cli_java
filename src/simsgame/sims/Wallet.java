@@ -1,4 +1,4 @@
-package simsgame;
+package simsgame.sims;
 public class Wallet {
     
 }
