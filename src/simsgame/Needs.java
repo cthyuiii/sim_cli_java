@@ -16,13 +16,13 @@ public class Needs {
     }
 
     // Overloaded for custom character creation stats
-    public Needs(int hunger, int energy, int hygiene, int social, int fun) {
-        this.hunger = hunger;
-        this.energy = energy;
-        this.hygiene = hygiene;
-        this.social = social;
-        this.fun = fun;
-    }
+    // public Needs(int hunger, int energy, int hygiene, int social, int fun) {
+    //     this.hunger = hunger;
+    //     this.energy = energy;
+    //     this.hygiene = hygiene;
+    //     this.social = social;
+    //     this.fun = fun;
+    // }
 
     // Getters
     public int getHunger() { return hunger; }
@@ -35,4 +35,10 @@ public class Needs {
         String statsStr = String.format("Hunger: %d | Energy: %d | Hygiene: %d | Social: %d | Fun: %d"); 
         System.out.println(statsStr);
     }
+
+    public void addHunger(int value) { Math.min(100, this.hunger += value); }
+    public void addEnergy(int value) { Math.min(100, this.energy += value); }
+    public void addHygiene(int value) { Math.min(100, this.hygiene += value); }
+    public void addSocial(int value) { Math.min(100, this.social += value); }
+    public void addFun(int value) { Math.min(100, this.fun += value); }
 }

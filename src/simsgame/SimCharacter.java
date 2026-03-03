@@ -1,5 +1,6 @@
 package simsgame;
 import simsgame.career.*;
+import simsgame.activity.*;
 
 public class SimCharacter {
     private String name;
@@ -39,5 +40,25 @@ public class SimCharacter {
 
     public void getMood() {
         System.out.println(mood.getMood());
+    }
+
+    public void adjustNeed(String needName, int amount) {
+        switch (needName) {
+            case "hunger":
+                this.needs.addHunger(amount);
+                break;
+            case "energy":
+                this.needs.addEnergy(amount);
+                break;
+            case "hygiene":
+                this.needs.addHygiene(amount);
+                break;
+            case "social":
+                this.needs.addSocial(amount);
+                break;
+            case "fun":
+                this.needs.addFun(amount);
+                break;
+        }
     }
 }

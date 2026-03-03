@@ -1,4 +1,8 @@
 package simsgame.activity;
-public class AbstractActivity {
-    
+
+import simsgame.Game;
+import simsgame.SimCharacter;
+
+public abstract class AbstractActivity {
+    public abstract void apply(SimCharacter sim, Game game);
 }
