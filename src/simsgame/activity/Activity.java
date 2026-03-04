@@ -1,16 +1,10 @@
 package simsgame.activity;
-import java.util.List;
-import java.util.ArrayList;
 
-public class Activity {
-    public static List<AbstractActivity> activityRegistry = new ArrayList<>();
+import simsgame.engine.GameContext;
+import simsgame.sims.SimCharacter;
 
-    static {
-        activityRegistry.add(new EatActivity());
-        activityRegistry.add(new PlayActivity());
-        activityRegistry.add(new ShowerActivity());
-        activityRegistry.add(new SleepActivity());
-        activityRegistry.add(new SocialiseActivity());
-    }
-
+public interface Activity {
+    String name();
+    int hours();
+    void apply(SimCharacter sim, GameContext context);
 }
