@@ -31,10 +31,7 @@ public class Needs {
     public int getSocial() { return social; }
     public int getFun() { return fun; }
     public int getAvgStats() { return (hunger + energy + hygiene + social + fun)/5; }
-    public void showStats() { 
-        String statsStr = String.format("Hunger: %d | Energy: %d | Hygiene: %d | Social: %d | Fun: %d"); 
-        System.out.println(statsStr);
-    }
+    public String getStatsStr() { return String.format("(\"Hunger: %d | Energy: %d | Hygiene: %d | Social: %d | Fun: %d\", )", this.hunger, this.energy, this.hygiene, this.social, this.fun); }
 
     public void addHunger(int value) { Math.min(100, this.hunger += value); }
     public void addEnergy(int value) { Math.min(100, this.energy += value); }

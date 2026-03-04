@@ -19,8 +19,17 @@ public class SimCharacter {
     }
 
     public String getName() { return this.name; }
+    public Needs getNeeds() { return this.needs; }
+    public Mood getMood() { return this.mood; }
+    public Wallet getWallet() { return this.wallet; }
+    public Family getFamily() { return this.family; }
+    public Career getCareer() { return this.career; }
 
-    public void calculateMood() {
+    public void getStatusStr() { 
+        System.out.println(needs.getStatsStr());
+    }
+
+    public void updateMood() {
         int moodNum = 0;
         if (needs.getAvgStats() < 25) {
             moodNum = 1;
@@ -37,27 +46,5 @@ public class SimCharacter {
         mood.changeMood(moodNum);
     }
 
-    public void getMood() {
-        System.out.println(mood.getMood());
-    }
-
-    public void adjustNeed(String needName, int amount) {
-        switch (needName) {
-            case "hunger":
-                this.needs.addHunger(amount);
-                break;
-            case "energy":
-                this.needs.addEnergy(amount);
-                break;
-            case "hygiene":
-                this.needs.addHygiene(amount);
-                break;
-            case "social":
-                this.needs.addSocial(amount);
-                break;
-            case "fun":
-                this.needs.addFun(amount);
-                break;
-        }
-    }
+    
 }
