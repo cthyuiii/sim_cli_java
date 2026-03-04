@@ -1,9 +1,10 @@
 package simsgame.activity;
+
+import simsgame.engine.GameContext;
 import simsgame.sims.SimCharacter;
-import simsgame.Game;
 
 public interface Activity {
     String name();
     int hours();
-    void apply(SimCharacter sim, Game game);
+    void apply(SimCharacter sim, GameContext context);
 }

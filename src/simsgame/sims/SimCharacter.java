@@ -1,50 +1,123 @@
 package simsgame.sims;
-import simsgame.career.*;
+
+import simsgame.activity.Activity;
+import simsgame.engine.GameContext;
+import simsgame.career.Career;
 
 public class SimCharacter {
+
     private String name;
+    private int age;
+
+    // Composition (owned by Sim)
     private Needs needs;
     private Mood mood;
     private Wallet wallet;
     private Family family;
+
+    // Aggregation (can change/remove)
     private Career career;
 
     public SimCharacter(String name) {
         this.name = name;
+
         this.needs = new Needs();
         this.mood = new Mood();
-        this.wallet = new Wallet();
+        this.wallet = new Wallet(100); // starting money
         this.family = new Family();
-        this.career = new Career();
     }
 
-    public String getName() { return this.name; }
-    public Needs getNeeds() { return this.needs; }
-    public Mood getMood() { return this.mood; }
-    public Wallet getWallet() { return this.wallet; }
-    public Family getFamily() { return this.family; }
-    public Career getCareer() { return this.career; }
+    // =====================================================
+    // Core behaviour
+    // =====================================================
 
-    public void getStatusStr() { 
-        System.out.println(needs.getStatsStr());
+    public void perform(Activity activity, GameContext context) {
+
+        // Apply activity effects
+        activity.apply(this, context);
+
+        // Advance simulation time
+        context.advanceTime(activity.hours());
+
+        // Update mood after needs changed
+        mood.update(needs);
     }
 
-    public void updateMood() {
-        int moodNum = 0;
-        if (needs.getAvgStats() < 25) {
-            moodNum = 1;
-        }
-        else if (needs.getHunger() < 20) {
-            moodNum = 2;
-        }
-        else if (needs.getEnergy() < 20) {
-            moodNum = 3;
-        }
-        else if (needs.getSocial() < 20 && needs.getFun() < 20) {
-            moodNum = 4;
-        }
-        mood.changeMood(moodNum);
+    // =====================================================
+    // Status
+    // =====================================================
+
+    public String getStatusString() {
+
+        String careerName = (career == null)
+                ? "Unemployed"
+                : career.getCareerName();
+
+        return """
+                Name: %s
+                Age: %d
+                Career: %s
+                Money: $%d
+
+                Needs:
+                Hunger: %d
+                Energy: %d
+                Hygiene: %d
+                Social: %d
+                Fun: %d
+
+                Mood: %s
+               """.formatted(
+                name,
+                age,
+                careerName,
+                wallet.getBalance(),
+                needs.getHunger(),
+                needs.getEnergy(),
+                needs.getHygiene(),
+                needs.getSocial(),
+                needs.getFun(),
+                mood.getMoodName()
+        );
     }
 
-    
+    // =====================================================
+    // Getters
+    // =====================================================
+
+    public String getName() {
+        return name;
+    }
+
+    public Needs getNeeds() {
+        return needs;
+    }
+
+    public Mood getMood() {
+        return mood;
+    }
+
+    public Wallet getWallet() {
+        return wallet;
+    }
+
+    public Family getFamily() {
+        return family;
+    }
+
+    public Career getCareer() {
+        return career;
+    }
+
+    // =====================================================
+    // Career control
+    // =====================================================
+
+    public void setCareer(Career career) {
+        this.career = career;
+    }
+
+    public void removeCareer() {
+        this.career = null;
+    }
 }

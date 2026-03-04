@@ -1,10 +1,15 @@
 package simsgame.activity;
 
+/**
+ * Shared base for most activities.
+ * Stores a name and a default time cost.
+ */
 public abstract class AbstractActivity implements Activity {
-    private String name;
-    private int hours;
 
-    public AbstractActivity(String name, int hours) {
+    private final String name;
+    private final int hours;
+
+    protected AbstractActivity(String name, int hours) {
         this.name = name;
         this.hours = hours;
     }
