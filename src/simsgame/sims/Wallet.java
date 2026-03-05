@@ -18,13 +18,16 @@ public class Wallet {
         }
     }
 
-    public void spend(double amount){
+    public boolean spend(double amount){
         if (amount>this.balance){
             System.out.println("Insufficient funds to spend!");
+            return false;
         } else if (amount<0){
             System.out.println("Unable to spend negative amounts!");
+            return false;
         } else{
             this.balance -= amount;
+            return true;
         }
     }
 }

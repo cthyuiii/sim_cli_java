@@ -40,7 +40,7 @@ public class WorkActivity implements Activity {
         //   int pay = career.work(sim, context);
         //
         // If your Career returns double, cast/round in Career itself.
-        int pay = career.work(sim, context);
+        double pay = career.work(sim, context);
 
         // Career may already pay via wallet, but to keep it consistent:
         // Decide ONE approach in your team:

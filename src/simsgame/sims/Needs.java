@@ -15,15 +15,6 @@ public class Needs {
         this.fun = 80;
     }
 
-    // Overloaded for custom character creation stats
-    // public Needs(int hunger, int energy, int hygiene, int social, int fun) {
-    //     this.hunger = hunger;
-    //     this.energy = energy;
-    //     this.hygiene = hygiene;
-    //     this.social = social;
-    //     this.fun = fun;
-    // }
-
     // Getters
     public int getHunger() { return hunger; }
     public int getEnergy() { return energy; }
@@ -33,9 +24,19 @@ public class Needs {
     public int getAvgStats() { return (hunger + energy + hygiene + social + fun)/5; }
     public String getStatsStr() { return String.format("(\"Hunger: %d | Energy: %d | Hygiene: %d | Social: %d | Fun: %d\", )", this.hunger, this.energy, this.hygiene, this.social, this.fun); }
 
-    public void addHunger(int value) { Math.min(100, this.hunger += value); }
-    public void addEnergy(int value) { Math.min(100, this.energy += value); }
-    public void addHygiene(int value) { Math.min(100, this.hygiene += value); }
-    public void addSocial(int value) { Math.min(100, this.social += value); }
-    public void addFun(int value) { Math.min(100, this.fun += value); }
+    public void addHunger(int value) { Math.min(100, hunger += value); }
+    public void addEnergy(int value) { Math.min(100, energy += value); }
+    public void addHygiene(int value) { Math.min(100, hygiene += value); }
+    public void addSocial(int value) { Math.min(100, social += value); }
+    public void addFun(int value) { Math.min(100, fun += value); }
+
+    public void decay(int hours) {
+        hunger -= 3 * (hours);
+        energy -= 2 * (hours);
+        hygiene -= (hours);
+        social -= (hours);
+        fun -= (hours);
+
+        // Missing prompting when falling below threshold 
+    }
 }
