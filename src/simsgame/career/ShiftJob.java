@@ -1,6 +1,8 @@
 package simsgame.career;
 
-public abstract class ShiftJob extends Career {
+import simsgame.sims.SimCharacter;
+
+public class ShiftJob extends Career {
     private int[] shiftOptions;
 
     public ShiftJob(CareerPromotion promotion, int[] shiftOptions) {
@@ -8,4 +10,13 @@ public abstract class ShiftJob extends Career {
         this.shiftOptions = shiftOptions;
     }
     
+    @Override
+    protected int getWorkHours(SimCharacter sim) {
+        return shiftOptions[0];
+    }
+
+    @Override
+    protected double calculatePay(SimCharacter sim, int hours) {
+        return hours * sim.getCareer().getCurrentPayRate(sim.getCareer().getLevel());
+    }
 }

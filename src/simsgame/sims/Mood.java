@@ -1,7 +1,7 @@
 package simsgame.sims;
 public class Mood {
     public enum moodState {
-        HAPPY, OKAY, STRESSED
+        HAPPY, OKAY, STRESSED, MISERABLE
     }
     private moodState currentMood;
 
@@ -9,14 +9,17 @@ public class Mood {
         this.currentMood = moodState.HAPPY;
     }
 
-    public moodState getMoodName() { return this.currentMood; }
+    public moodState getMoodName() { return currentMood; }
 
     public void update(Needs needs) {
         int avgNeeds = needs.getAvgStats();
-        if (avgNeeds < 25) {
-            this.currentMood = moodState.STRESSED;
+        if (avgNeeds < 20) {
+            currentMood = moodState.MISERABLE;
         }
-        else if (avgNeeds < 50) {
+        if (avgNeeds < 40) {
+            currentMood = moodState.STRESSED;
+        }
+        else if (avgNeeds < 60) {
             currentMood = moodState.OKAY;
         }
         else {

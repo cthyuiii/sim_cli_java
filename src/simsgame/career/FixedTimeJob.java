@@ -1,11 +1,23 @@
 package simsgame.career;
 
-public abstract class FixedTimeJob extends Career {
+import simsgame.sims.SimCharacter;
+
+public class FixedTimeJob extends Career {
     private int fixedHours;
 
     public FixedTimeJob(CareerPromotion promotion, int fixedHours) {
         super(promotion, 0, 0);
         this.fixedHours = fixedHours;
+    }
+
+    @Override
+    protected int getWorkHours(SimCharacter sim) {
+        return fixedHours;
+    }
+
+    @Override
+    protected double calculatePay(SimCharacter sim, int hours) {
+        return hours * sim.getCareer().getCurrentPayRate(sim.getCareer().getLevel());
     }
     
 }
