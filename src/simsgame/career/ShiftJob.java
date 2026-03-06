@@ -9,14 +9,16 @@ public class ShiftJob extends Career {
         super(promotion, 0, 0);
         this.shiftOptions = shiftOptions;
     }
-    
+
     @Override
     protected int getWorkHours(SimCharacter sim) {
-        return shiftOptions[0];
+        int shiftAllocate = (int) Math.random() * shiftOptions.length;
+
+        return shiftOptions[shiftAllocate];
     }
 
     @Override
     protected double calculatePay(SimCharacter sim, int hours) {
-        return hours * sim.getCareer().getCurrentPayRate(sim.getCareer().getLevel());
+        return Math.max(3.0, hours) * sim.getCareer().getCurrentPayRate(sim.getCareer().getLevel());
     }
 }
