@@ -30,6 +30,10 @@ public class Needs {
     public void addSocial(int value) { Math.min(100, social += value); }
     public void addFun(int value) { Math.min(100, fun += value); }
 
+    public boolean isCritical() {
+        return hunger <= 10 || energy <= 10 || hygiene <= 10 || social <= 10 || fun <= 10;
+    }
+
     public void decay(int hours) {
         hunger -= 3 * (hours);
         energy -= 2 * (hours);

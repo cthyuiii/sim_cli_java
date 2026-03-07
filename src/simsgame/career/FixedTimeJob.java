@@ -17,7 +17,6 @@ public class FixedTimeJob extends Career {
 
     @Override
     protected double calculatePay(SimCharacter sim, int hours) {
-        return fixedHours * sim.getCareer().getCurrentPayRate(sim.getCareer().getLevel());
+        return fixedHours * getPromotion().getPayRate(getLevel());
     }
-    
 }

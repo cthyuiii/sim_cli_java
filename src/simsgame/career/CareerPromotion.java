@@ -14,7 +14,18 @@ public class CareerPromotion {
     }
 
     public String getCareerName() { return careerName; }
-    public String getTitle(int level) { return titles[level]; }
-    public double getPayRate(int level) { return payRates[level]; }
+    
+    public String getTitle(int level) { 
+        if (level < 0) {
+            level = 0;
+        }
+        return titles[level]; }
+
+    public double getPayRate(int level) { 
+        if (level < 0) {
+            level = 0;
+        }
+        return payRates[level]; }
+
     public int getPromotionRequirement(int level) { return reqs[level]; }
 }

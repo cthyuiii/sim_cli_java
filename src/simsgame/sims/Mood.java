@@ -13,7 +13,7 @@ public class Mood {
 
     public void update(Needs needs) {
         int avgNeeds = needs.getAvgStats();
-        if (avgNeeds < 20) {
+        if (needs.isCritical()) {
             currentMood = moodState.MISERABLE;
         }
         if (avgNeeds < 40) {

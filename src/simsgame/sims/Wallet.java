@@ -7,26 +7,26 @@ public class Wallet {
     }
 
     public double getBalance(){
-        return this.balance;
+        return balance;
     }
 
     public void earn(double amount){
         if (amount<0){
             System.out.println("Unable to earn negative amounts!");
         } else{
-            this.balance += amount;
+            balance += amount;
         }
     }
 
     public boolean spend(double amount){
-        if (amount>this.balance){
+        if (amount>balance){
             System.out.println("Insufficient funds to spend!");
             return false;
         } else if (amount<0){
             System.out.println("Unable to spend negative amounts!");
             return false;
         } else{
-            this.balance -= amount;
+            balance -= amount;
             return true;
         }
     }

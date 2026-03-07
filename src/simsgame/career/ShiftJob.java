@@ -19,6 +19,6 @@ public class ShiftJob extends Career {
 
     @Override
     protected double calculatePay(SimCharacter sim, int hours) {
-        return Math.max(3.0, hours) * sim.getCareer().getCurrentPayRate(sim.getCareer().getLevel());
+        return Math.max(3.0, hours) * getPromotion().getPayRate(getLevel());
     }
 }
