@@ -152,8 +152,11 @@ public class GameEngine implements GameContext {
         SimCharacter sim = getActiveSim();
         if (sim == null) return "No active Sim.";
 
-        sim.getFamily().tryForBaby(time.getCurrentDay());
-        return sim.getName() + " is trying for a baby!";
+        if (sim.getWallet().getBalance() < 100)  { return "You have insufficient funds to raise a baby!"; }
+        
+        if (sim.getNeeds().getSocial() < 50 || sim.getNeeds().getEnergy() < 40) { return "You do not feel like trying for a child at the moment.."; }
+
+        return sim.getFamily().tryForBaby(sim.getName(), time.getCurrentDay());
     }
 
     // =====================================================
