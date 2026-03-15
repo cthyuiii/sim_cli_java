@@ -3,7 +3,6 @@ package simsgame;
 
 import java.util.List;
 import java.util.Scanner;
-
 import simsgame.engine.GameEngine;
 
 /**
@@ -181,23 +180,24 @@ public class ConsoleUI {
 
         List<String> options = engine.getCareerOptions();
         if (options == null || options.isEmpty()) {
-            System.out.println("No career options available yet.");
+            System.out.println("No career options available.");
             pause();
             return;
         }
 
+        System.out.println("Choose a job type:");
         for (int i = 0; i < options.size(); i++) {
             System.out.println((i + 1) + ") " + options.get(i));
         }
         System.out.println("0) Back");
 
-        int choice = readInt("Choose a career: ", 0, options.size());
+        int choice = readInt("Choose a job type: ", 0, options.size());
         if (choice == 0) return;
 
-        String result = engine.assignCareerToActiveSim(choice - 1);
-        if (result != null && !result.isBlank()) {
-            System.out.println(result);
-        }
+        String customTitle = readNonEmptyLine("Enter the job title: ");
+
+        String result = engine.assignCareerToActiveSim(choice, customTitle);
+        System.out.println(result);
         pause();
     }
 

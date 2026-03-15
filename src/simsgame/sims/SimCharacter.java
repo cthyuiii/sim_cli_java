@@ -1,8 +1,8 @@
 package simsgame.sims;
 
 import simsgame.activity.Activity;
-import simsgame.engine.GameContext;
 import simsgame.career.Career;
+import simsgame.engine.GameContext;
 
 public class SimCharacter {
 
@@ -20,7 +20,7 @@ public class SimCharacter {
 
     public SimCharacter(String name) {
         this.name = name;
-
+        this.age = 18;
         this.needs = new Needs();
         this.mood = new Mood();
         this.wallet = new Wallet(100); // starting money
@@ -57,7 +57,7 @@ public class SimCharacter {
                 Name: %s
                 Age: %d
                 Career: %s
-                Money: $%d
+                Money: $%.2f
 
                 Needs:
                 Hunger: %d

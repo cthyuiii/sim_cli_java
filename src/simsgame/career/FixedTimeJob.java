@@ -3,10 +3,11 @@ package simsgame.career;
 import simsgame.sims.SimCharacter;
 
 public class FixedTimeJob extends Career {
+
     private int fixedHours;
 
     public FixedTimeJob(CareerPromotion promotion, int fixedHours) {
-        super(promotion, 0, 0);
+        super(promotion);
         this.fixedHours = fixedHours;
     }
 

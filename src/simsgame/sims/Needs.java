@@ -22,25 +22,32 @@ public class Needs {
     public int getSocial() { return social; }
     public int getFun() { return fun; }
     public int getAvgStats() { return (hunger + energy + hygiene + social + fun)/5; }
-    public String getStatsStr() { return String.format("(\"Hunger: %d | Energy: %d | Hygiene: %d | Social: %d | Fun: %d\", )", this.hunger, this.energy, this.hygiene, this.social, this.fun); }
+    public String getStatsStr() {
+        return String.format("Hunger: %d | Energy: %d | Hygiene: %d | Social: %d | Fun: %d",
+                hunger, energy, hygiene, social, fun);
+    }
+    
+    public void addHunger(int value) { hunger = clamp(hunger + value); }
+    public void addEnergy(int value) { energy = clamp(energy + value); }
+    public void addHygiene(int value) { hygiene = clamp(hygiene + value); }
+    public void addSocial(int value) { social = clamp(social + value); }
+    public void addFun(int value) { fun = clamp(fun + value); }
 
-    public void addHunger(int value) { Math.min(100, hunger += value); }
-    public void addEnergy(int value) { Math.min(100, energy += value); }
-    public void addHygiene(int value) { Math.min(100, hygiene += value); }
-    public void addSocial(int value) { Math.min(100, social += value); }
-    public void addFun(int value) { Math.min(100, fun += value); }
+    private int clamp(int value) {
+        if (value < 0) return 0;
+        if (value > 100) return 100;
+        return value;
+    }
 
     public boolean isCritical() {
         return hunger <= 10 || energy <= 10 || hygiene <= 10 || social <= 10 || fun <= 10;
     }
 
     public void decay(int hours) {
-        hunger -= 3 * (hours);
-        energy -= 2 * (hours);
-        hygiene -= (hours);
-        social -= (hours);
-        fun -= (hours);
-
-        // Missing prompting when falling below threshold 
+        addHunger(-3 * hours);
+        addEnergy(-2 * hours);
+        addHygiene(-1 * hours);
+        addSocial(-1 * hours);
+        addFun(-1 * hours);
     }
 }

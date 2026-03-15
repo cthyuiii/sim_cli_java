@@ -2,11 +2,10 @@ package simsgame.engine;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import simsgame.sims.SimCharacter;
 import simsgame.activity.Activity;
 import simsgame.career.Career;
 import simsgame.career.CareerFactory;
+import simsgame.sims.SimCharacter;
 
 /**
  * GameEngine handles:
@@ -130,18 +129,18 @@ public class GameEngine implements GameContext {
     // =====================================================
 
     public List<String> getCareerOptions() {
-        return CareerFactory.getCareerNames();
-    }
+        return CareerFactory.getCareerTypes();
+    }   
 
-    public String assignCareerToActiveSim(int optionIndex) {
+    public String assignCareerToActiveSim(int type, String title) {
         SimCharacter sim = getActiveSim();
         if (sim == null) return "No active Sim.";
 
-        Career career = CareerFactory.createCareer(optionIndex);
-        if (career == null) return "Invalid career option.";
+        Career career = CareerFactory.createCareer(type, title);
+        if (career == null) return "Invalid career type.";
 
         sim.setCareer(career);
-        return sim.getName() + " is now a " + career.getCareerName();
+        return sim.getName() + " is now a " + career.getCareerName() + ".";
     }
 
     // =====================================================
@@ -165,8 +164,8 @@ public class GameEngine implements GameContext {
 
     @Override
     public void advanceTime(int hours) {
-        int daysPassed = time.advance(hours);
         int previousDay = time.getCurrentDay();
+        int daysPassed = time.advance(hours);
 
         // Hourly updates
         for (SimCharacter sim : sims) {

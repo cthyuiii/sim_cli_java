@@ -15,14 +15,11 @@ public class Mood {
         int avgNeeds = needs.getAvgStats();
         if (needs.isCritical()) {
             currentMood = moodState.MISERABLE;
-        }
-        if (avgNeeds < 40) {
+        } else if (avgNeeds < 40) {
             currentMood = moodState.STRESSED;
-        }
-        else if (avgNeeds < 60) {
+        } else if (avgNeeds < 60) {
             currentMood = moodState.OKAY;
-        }
-        else {
+        } else {
             currentMood = moodState.HAPPY;
         }
     }
