@@ -76,7 +76,7 @@ public class GameEngine implements GameContext {
         }
     }
 
-    private SimCharacter getActiveSim() {
+    public SimCharacter getActiveSim() {
         if (activeSimIndex < 0 || activeSimIndex >= sims.size()) {
             return null;
         }

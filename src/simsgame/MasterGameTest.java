@@ -22,7 +22,7 @@ public class MasterGameTest {
     public void setUp() {
         engine = new GameEngine();
         engine.createSim("TestSim");
-        sim = engine.getSimNames().size() > 0 ? new SimCharacter("TestSim") : null;
+        sim = engine.getActiveSim();
         wallet = sim.getWallet();
         needs = sim.getNeeds();
         mood = sim.getMood();
@@ -71,7 +71,7 @@ public class MasterGameTest {
         // Decay needs to a level where mood becomes STRESSED (avg < 40)
         needs.decay(20); 
         mood.update(needs);
-        assertEquals("", Mood.moodState.STRESSED, mood.getMoodName());
+        assertEquals(Mood.moodState.STRESSED, mood.getMoodName());
     }
 
     // --- TIME TESTS ---
@@ -140,10 +140,9 @@ public class MasterGameTest {
         
         // Sim starts at Level 0. Work once to gain experience
         job.work(sim, new GameEngine()); // WorkExperience += 10
-        job.checkPromotion(); // Reaches requirement of 10
         
         assertEquals("Sim should be promoted to Level 1", 1, job.getLevel());
-        assertEquals("Title should be Senior", "Senior", job.getCurrentTitle(1));
+        assertEquals("Title should be Senior", "Senior", job.getCurrentTitle());
     }
 
     // --- FAMILY SYSTEM TESTS ---

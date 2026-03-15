@@ -23,7 +23,7 @@ import simsgame.engine.GameEngine;
  *   String performActivity(int activityIndex);   // returns result/summary message (or empty)
  *
  *   List<String> getCareerOptions();             // names like "ShiftJob - Barista", etc.
- *   String assignCareerToActiveSim(int careerOptionIndex); // returns result/summary
+ *   String assignCareerToActiveSim(int type, String title); // returns result/summary
  *
  *   String tryForBabyActiveSim();                // optional: if you implement family actions
  */
