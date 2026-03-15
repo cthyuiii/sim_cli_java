@@ -7,6 +7,22 @@ public class Child {
     private int birthDay;
     private boolean needCare;
 
+    public String getName() {
+    return name;
+    }
+
+    public int getAgeInDays() {
+        return ageInDays;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public int getBirthDay() {
+        return birthDay;
+    }
+
     public Child(String name, String gender, int currentDay) {
         this.name = name;
         this.ageInDays = 0;
@@ -30,6 +46,10 @@ public class Child {
 
     public void updateAge(int currentDay) {
         ageInDays = currentDay - birthDay;
+        
+        if (ageInDays >= 7) {
+            needCare = false;
+        }
     }
 
 }

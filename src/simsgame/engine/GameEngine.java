@@ -166,6 +166,7 @@ public class GameEngine implements GameContext {
     @Override
     public void advanceTime(int hours) {
         int daysPassed = time.advance(hours);
+        int previousDay = time.getCurrentDay();
 
         // Hourly updates
         for (SimCharacter sim : sims) {
@@ -174,9 +175,9 @@ public class GameEngine implements GameContext {
         }
 
         // Daily updates
-        for (int i = 0; i < daysPassed; i++) {
+        for (int day = previousDay + 1; day <= previousDay + daysPassed; day++) {
             for (SimCharacter sim : sims) {
-                sim.getFamily().onNewDay(time.getCurrentDay());
+                sim.getFamily().onNewDay(day);
             }
         }
     }

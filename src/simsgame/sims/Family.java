@@ -1,6 +1,6 @@
 package simsgame.sims;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Family {
     private List<Child> children = new ArrayList<>(); 
@@ -13,9 +13,9 @@ public class Family {
     public boolean isPregnant(){ return pregnant; }
 
     public String tryForBaby(String name, int currentDay){
-        System.out.printf("%s is trying for a baby!");
+        System.out.printf("%s is trying for a baby!", name);
         if (Math.random() * 100 < 70) {
-            return "The attempt was unsucessful. " + name + " is feeling a bit tired, but there's always next time!";
+            return "The attempt was unsuccessful. " + name + " is feeling a bit tired, but there's always next time!";
         }
         else {
             pregnant = true;
@@ -36,13 +36,17 @@ public class Family {
     }
 
     public void onNewDay(int currentDay){
-        if (currentDay - pregnancyDay == PREGNANCY_DURATION) {
+        if (pregnant && currentDay - pregnancyDay >= PREGNANCY_DURATION) {
             giveBirth("John", currentDay);
+        }
+
+        for (Child child : children) {
+            child.updateAge(currentDay);
         }
     }
 
-    public void careforChildren(){
-        List<Child> childrenNeedingCare = new ArrayList<>();;
+    public void careForChildren(){
+        List<Child> childrenNeedingCare = new ArrayList<>();
         for (Child child : children) {
             if (child.getCareStatus()) {
                 childrenNeedingCare.add(child);
@@ -54,7 +58,7 @@ public class Family {
         }
         else {
             for (Child child: childrenNeedingCare) {
-                child.updateCareStatus(true);
+                child.updateCareStatus(false);
         }
         }
     }
