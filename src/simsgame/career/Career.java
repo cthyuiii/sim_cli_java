@@ -14,19 +14,7 @@ public abstract class Career {
     }
 
     public double work(SimCharacter sim, GameContext context) {
-        // int experienceGained = (int) Math.random() * 2;
         int hours = getWorkHours(sim);
-       /*  switch(experienceGained) {
-            case 0:
-                workExperience += 10;
-                break;
-            case 1:
-                workExperience += 20;
-                break;
-            case 2:
-                workExperience += 50;
-                break;
-        }*/
         workExperience += 10;
         checkPromotion();
         double pay = calculatePay(sim, hours);
