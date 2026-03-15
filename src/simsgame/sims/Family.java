@@ -1,6 +1,7 @@
 package simsgame.sims;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Family {
     private List<Child> children = new ArrayList<>(); 
@@ -37,7 +38,12 @@ public class Family {
 
     public void onNewDay(int currentDay){
         if (pregnant && currentDay - pregnancyDay >= PREGNANCY_DURATION) {
-            giveBirth("John", currentDay);
+            Scanner scanner_obj = new Scanner(System.in);
+            System.out.print("Enter a name for the baby: ");
+            String babyName = scanner_obj.nextLine();
+
+            giveBirth(babyName, currentDay);
+            scanner_obj.close();
         }
 
         for (Child child : children) {
