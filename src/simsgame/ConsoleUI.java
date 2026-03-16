@@ -180,7 +180,7 @@ public class ConsoleUI {
     private void printWelcomeScreen() {
         printBorder("section", "WELCOME TO THE SIMS!");
         System.out.println("│" + " ".repeat(62) + "│");
-        System.out.println("│  " + CYAN + "Welcome to The Sims - Text Edition!" + RESET + " ".repeat(24) + "│");
+        System.out.println("│  " + CYAN + "Welcome to The Sims - Text Edition!" + RESET + " ".repeat(25) + "│");
         System.out.println("│" + " ".repeat(62) + "│");
         System.out.println("│  " + WHITE + "Create your first Sim to begin your journey." + RESET + " ".repeat(16) + "│");
         System.out.println("│  " + WHITE + "Manage their needs, build a career, and live life!" + RESET + " ".repeat(10) + "│");
@@ -198,11 +198,22 @@ public class ConsoleUI {
 
         printBorder("section", "");
         System.out.println("│" + " ".repeat(62) + "│");
+        // "💀 R.I.P. 💀" = 11 chars + 2 emojis (each counts as 2) = 13 visual chars
+        // Center it: (62 - 13) / 2 = 24.5, so 24 spaces on left, 25 on right
         System.out.println("│" + " ".repeat(25) + RED + BOLD + "💀 R.I.P. 💀" + RESET + " ".repeat(25) + "│");
         System.out.println("│" + " ".repeat(62) + "│");
-        System.out.printf("│" + " ".repeat(15) + RED + BOLD + "%s has passed away..." + RESET + "%s│\n",
-            sim.getName(),
-            " ".repeat(Math.max(0, 29 - sim.getName().length())));
+
+        // "[Name] has passed away..." = name.length() + 20
+        String deathMsg = sim.getName() + " has passed away...";
+        int msgPadding = (62 - deathMsg.length()) / 2;
+        int rightPadding = 62 - deathMsg.length() - msgPadding;
+        System.out.printf("│%s%s%s%s%s│\n",
+            " ".repeat(msgPadding),
+            RED + BOLD,
+            deathMsg,
+            RESET,
+            " ".repeat(rightPadding));
+
         System.out.println("│" + " ".repeat(62) + "│");
         System.out.println("│  " + GRAY + "Their life has come to an end. They can no longer" + RESET + " ".repeat(11) + "│");
         System.out.println("│  " + GRAY + "perform any actions." + RESET + " ".repeat(40) + "│");
@@ -243,30 +254,37 @@ public class ConsoleUI {
         printBorder("section", "STATUS CARD");
 
         // Header info - Name and Money
-        int nameLen = name.length();
-        int moneyStr = formatMoney(money).length();
-        int padding = Math.max(0, 36 - nameLen - moneyStr);
-        System.out.printf("│ Name: %s%-20s%s  💰 Money: %s%s%s%s│\n",
+        // Visual: "Name: " (6) + name + "  💰 Money: " (11 + emoji=2 = 13) + money + " " (1)
+        String moneyDisplay = formatMoney(money);
+        int line1Visual = 6 + name.length() + 13 + moneyDisplay.length() + 1;
+        int namePadding = Math.max(0, 64 - line1Visual);
+        System.out.printf("│ Name: %s%s%s%s💰 Money: %s%s%s %s│\n",
             BOLD, name, RESET,
-            BLUE + BOLD, formatMoney(money), RESET,
-            " ".repeat(padding));
+            " ".repeat(namePadding),
+            BLUE + BOLD, moneyDisplay, RESET,
+            "");
 
         // Career and Time
-        int careerLen = career.length();
+        // Visual: "Career: " (8) + career + " 📅 Day " (9) + day + ", Hour " (7) + hour + " (" (2) + time + ") " (2)
+        String dayStr = String.valueOf(day);
+        String hourStr = String.valueOf(hour);
         String timeStr = formatTime(hour);
-        int timePadding = Math.max(0, 24 - careerLen);
-        System.out.printf("│ Career: %-25s 📅 Day %s%d%s, Hour %s%d%s (%s)%s│\n",
+        int line2Visual = 8 + career.length() + 9 + dayStr.length() + 7 + hourStr.length() + 2 + timeStr.length() + 2;
+        int careerPadding = Math.max(0, 63 - line2Visual);
+        System.out.printf("│ Career: %s%s📅 Day %s%s%s, Hour %s%s%s (%s) %s│\n",
             career,
+            " ".repeat(careerPadding),
             CYAN, day, RESET,
             CYAN, hour, RESET,
-            timeStr,
-            " ".repeat(timePadding > 0 ? 1 : 0));
+            timeStr, "");
 
         // Mood
+        // Visual: "Mood: " (6) + emoji (2) + " " (1) + mood + " " (1)
         String moodIcon = getMoodIcon(mood);
         String moodColor = getMoodColor(mood);
-        int moodPadding = Math.max(0, 49 - mood.length());
-        System.out.printf("│ Mood: %s %s%s%s%s│\n",
+        int line3Visual = 6 + 2 + 1 + mood.length() + 1;
+        int moodPadding = Math.max(0, 61 - line3Visual);
+        System.out.printf("│ Mood: %s %s%s%s %s│\n",
             moodIcon,
             moodColor + BOLD, mood, RESET,
             " ".repeat(moodPadding));
@@ -302,20 +320,32 @@ public class ConsoleUI {
             String hoursStr = (i == 5 && hasCareer) ? getWorkHoursEstimate(sim.getCareer()) :
                               (info.hours > 0 ? info.hours + "h" : "0h");
 
-            String suffix = "";
-            if (!affordable) suffix = GRAY + DIM + " (Can't afford)" + RESET;
-            else if (!enabled) suffix = GRAY + DIM + " (No career)" + RESET;
+            String suffixText = "";
+            int suffixLen = 0;
+            if (!affordable) {
+                suffixText = " (Can't afford)";
+                suffixLen = 15;
+            } else if (!enabled) {
+                suffixText = " (No career)";
+                suffixLen = 12;
+            }
 
-            // Build the action line
-            String actionLine = String.format("%d) %s %s (%s) - %s → %s%s",
-                i + 1, info.icon, info.name, hoursStr, costStr, info.effects, suffix);
+            // Calculate visual length
+            // Format: "N) emoji name (Xh) - $cost → effects"
+            // Visual: N (1-2 digits) + ") " (2) + emoji (2) + " " (1) + name + " (" (2) + hours + ") - " (4) + cost + " → " (3) + effects
+            int numLen = (i + 1) >= 10 ? 2 : 1;
+            int lineVisual = numLen + 2 + 2 + 1 + info.name.length() + 2 + hoursStr.length() + 4 + costStr.length() + 3 + info.effects.length() + suffixLen;
+            int padding = Math.max(0, 60 - lineVisual);
 
-            // Calculate padding to reach 60 chars (accounting for emojis being 2 chars wide)
-            int visualLen = actionLine.length() - countAnsiCodes(suffix);
-            int padding = Math.max(0, 58 - visualLen);
-
-            System.out.printf("│ %s%s%s%s%s│\n",
-                dim, color, actionLine, " ".repeat(padding), RESET);
+            if (!affordable || !enabled) {
+                System.out.printf("│ %s%s%d) %s %s (%s) - %s → %s%s%s%s%s │\n",
+                    dim, color, i + 1, info.icon, info.name, hoursStr, costStr, info.effects,
+                    GRAY + DIM, suffixText, RESET, " ".repeat(padding));
+            } else {
+                System.out.printf("│ %s%s%d) %s %s (%s) - %s → %s%s%s │\n",
+                    dim, color, i + 1, info.icon, info.name, hoursStr, costStr, info.effects,
+                    RESET, " ".repeat(padding));
+            }
         }
 
         printBorder("bottom", "");
@@ -433,7 +463,7 @@ public class ConsoleUI {
         System.out.println();
         printBorder("section", "ACTION RESULT");
         int resultLen = result.length();
-        int resultPadding = Math.max(0, 56 - resultLen);
+        int resultPadding = Math.max(0, 61 - resultLen);
         System.out.printf("│ %s%s%s%s│\n",
             CYAN + BOLD, result, RESET + " ".repeat(resultPadding), RESET);
         printBorder("bottom", "");
@@ -741,10 +771,13 @@ public class ConsoleUI {
         }
         bar.append("]" + RESET);
 
-        System.out.printf("│ %s %-8s %s %s%3d%s  %-15s │\n",
-            icon, label, bar.toString(),
-            color, value, RESET,
-            DIM + "(" + status + ")" + RESET);
+        // Visual calculation: emoji (2) + " " (1) + label (8) + " " (1) + "[" (1) + bar (20) + "]" (1) + " " (1) + value (3) + "  (" (3) + status + ") " (2)
+        // = 2 + 1 + 8 + 1 + 1 + 20 + 1 + 1 + 3 + 3 + status.length() + 2 = 43 + status.length()
+        int lineVisual = 2 + 1 + 8 + 1 + 1 + 20 + 1 + 1 + 3 + 3 + status.length() + 2;
+        int padding = Math.max(0, 61 - lineVisual);
+
+        System.out.printf("│ %s %-8s %s %s%3d%s  (%s) %s│\n",
+            icon, label, bar.toString(), color, value, RESET, status, " ".repeat(padding));
     }
 
     private String getWorkHoursEstimate(Career career) {
