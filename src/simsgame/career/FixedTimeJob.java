@@ -12,7 +12,7 @@ public class FixedTimeJob extends Career {
     }
 
     @Override
-    protected int getWorkHours(SimCharacter sim) {
+    public int getWorkHours(SimCharacter sim) {
         return fixedHours;
     }
 

@@ -25,8 +25,7 @@ public class CareerFactory {
                         },
                         new double[]{8, 12, 16},
                         new int[]{20, 40, Integer.MAX_VALUE}
-                    ),
-                    new int[]{4, 6, 8}
+                    )
                 );
 
             case 2:

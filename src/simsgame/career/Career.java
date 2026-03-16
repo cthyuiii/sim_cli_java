@@ -15,8 +15,7 @@ public abstract class Career {
         this.workExperience = 0;
     }
 
-    public double work(SimCharacter sim, GameContext context) {
-        int hours = getWorkHours(sim);
+    public double work(SimCharacter sim, GameContext context, int hours) {
 
         workExperience += 10;
         checkPromotion();
@@ -24,7 +23,7 @@ public abstract class Career {
         return calculatePay(sim, hours);
     }
 
-    protected abstract int getWorkHours(SimCharacter sim);
+    public abstract int getWorkHours(SimCharacter sim);
     protected abstract double calculatePay(SimCharacter sim, int hours);
 
     protected CareerPromotion getPromotion() {

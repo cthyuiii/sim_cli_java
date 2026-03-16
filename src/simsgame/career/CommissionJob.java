@@ -19,13 +19,14 @@ public class CommissionJob extends Career {
     }
 
     @Override
-    protected int getWorkHours(SimCharacter sim) {
+    public int getWorkHours(SimCharacter sim) {
         return commissionHours;
     }
 
     @Override
     protected double calculatePay(SimCharacter sim, int hours) {
         double bonus = bonusPay.nextDouble() * 500;
-        return basePay + (hours * commissionRate) + bonus;
+        double pay = basePay + (hours * commissionRate) + bonus;
+        return Math.round(pay * 100.0) / 100.0; // round to 2 decimals
     }
 }

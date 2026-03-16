@@ -1,30 +1,61 @@
 package simsgame.activity;
 
+import java.util.Scanner;
 import simsgame.career.Career;
+import simsgame.career.ShiftJob;
 import simsgame.engine.GameContext;
 import simsgame.sims.SimCharacter;
 
-public class WorkActivity extends AbstractActivity {
+public class WorkActivity implements Activity {
 
-    public WorkActivity() {
-        super("Work", 0); // real hours come from Career
+    private Scanner scanner = new Scanner(System.in);
+
+    @Override
+    public String name() {
+        return "Work";
+    }
+
+    @Override
+    public int hours() {
+        return 0; // handled manually here
     }
 
     @Override
     public void apply(SimCharacter sim, GameContext context) {
         Career career = sim.getCareer();
+
         if (career == null) {
             context.notify(sim.getName() + " has no career yet. Assign a job first.");
             return;
         }
 
-        double pay = career.work(sim, context);
+        int hoursWorked;
 
-        if (pay > 0) {
-            sim.getWallet().earn((int) Math.round(pay));
+        if (career instanceof ShiftJob) {
+            System.out.print("Enter number of hours to work: ");
+            try {
+                hoursWorked = Integer.parseInt(scanner.nextLine());
+            } catch (Exception e) {
+                hoursWorked = 4;
+            }
+
+            if (hoursWorked <= 0) {
+                hoursWorked = 1;
+            }
+        } else {
+            hoursWorked = career.getWorkHours(sim);
         }
 
-        context.notify(sim.getName() + " worked as a " +
-                career.getCareerName() + " and earned $" + pay + ".");
+        double pay = career.work(sim, context, hoursWorked);
+
+        if (pay > 0) {
+            sim.getWallet().earn(pay);
+        }
+
+        context.advanceTime(hoursWorked);
+
+        context.notify(sim.getName() + " worked " + hoursWorked +
+                " hours as a " + career.getCareerName() +
+                " and earned $" + pay + ".");
     }
 }

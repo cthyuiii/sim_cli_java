@@ -8,6 +8,9 @@ public class SimCharacter {
 
     private String name;
     private int age;
+    private int hungerZeroDay = -1;
+    private int energyZeroDay = -1;
+    private boolean alive = true;
 
     // Composition (owned by Sim)
     private Needs needs;
@@ -32,7 +35,10 @@ public class SimCharacter {
     // =====================================================
 
     public void perform(Activity activity, GameContext context) {
-
+        if (!alive) {
+            context.notify(name + " is dead and cannot perform actions.");
+            return;
+        }
         // Apply activity effects
         activity.apply(this, context);
 
@@ -79,6 +85,35 @@ public class SimCharacter {
                 needs.getFun(),
                 mood.getMoodName()
         );
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void checkDeath(GameContext context) {
+
+        int day = context.getCurrentDay();
+
+        if (needs.getHunger() <= 0) {
+            if (hungerZeroDay == -1) hungerZeroDay = day;
+                if (day - hungerZeroDay >= 1) {
+                    alive = false;
+                    context.notify(name + " has died from starvation...");
+                }
+            } else {
+                hungerZeroDay = -1;
+        }
+
+        if (needs.getEnergy() <= 0) {
+            if (energyZeroDay == -1) energyZeroDay = day;
+                if (day - energyZeroDay >= 1) {
+                    alive = false;
+                    context.notify(name + " collapsed from exhaustion and died...");
+                }
+            } else {
+                energyZeroDay = -1;
+        }
     }
 
     // =====================================================

@@ -4,17 +4,13 @@ import simsgame.sims.SimCharacter;
 
 public class ShiftJob extends Career {
 
-    private int[] shiftOptions;
-
-    public ShiftJob(CareerPromotion promotion, int[] shiftOptions) {
+    public ShiftJob(CareerPromotion promotion) {
         super(promotion);
-        this.shiftOptions = shiftOptions;
     }
 
     @Override
-    protected int getWorkHours(SimCharacter sim) {
-        int shiftAllocate = (int) (Math.random() * shiftOptions.length);
-        return shiftOptions[shiftAllocate];
+    public int getWorkHours(SimCharacter sim) {
+        return 4; // hours decided by WorkActivity
     }
 
     @Override

@@ -169,8 +169,12 @@ public class GameEngine implements GameContext {
 
         // Hourly updates
         for (SimCharacter sim : sims) {
+
+            if (!sim.isAlive()) continue;
+
             sim.getNeeds().decay(hours);
             sim.getMood().update(sim.getNeeds());
+            sim.checkDeath(this);
         }
 
         // Daily updates
@@ -196,5 +200,12 @@ public class GameEngine implements GameContext {
         // Engine-level message hook
         // Could later route to UI instead of printing
         System.out.println(message);
+    }
+
+    public boolean isGameOver() {
+        for (SimCharacter sim : sims) {
+            if (sim.isAlive()) return false;
+        }
+        return true;
     }
 }
