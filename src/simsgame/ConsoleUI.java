@@ -111,16 +111,33 @@ public class ConsoleUI {
         while (running) {
             printDashboard();
 
-            int choice = readInt("Choose action [0-9]: ", 0, 9);
+            // Check if it's first run (no sims) - restrict options
+            boolean firstRun = (engine.getSimCount() == 0);
 
-            if (choice >= 1 && choice <= 6) {
-                handleQuickAction(choice);
+            if (firstRun) {
+                // First run: only allow 9 (create sim) or 0 (quit)
+                int choice = readInt("Choose action [0 or 9]: ", 0, 9);
+                if (choice == 9) {
+                    simManagementFlow();
+                } else if (choice == 0) {
+                    running = false;
+                } else {
+                    System.out.println(RED + "⚠️  Please create a Sim first (option 9) or quit (0)." + RESET);
+                    pause();
+                }
             } else {
-                switch (choice) {
-                    case 7 -> careerFlow();
-                    case 8 -> familyFlow();
-                    case 9 -> simManagementFlow();
-                    case 0 -> running = false;
+                // Normal gameplay
+                int choice = readInt("Choose action [0-9]: ", 0, 9);
+
+                if (choice >= 1 && choice <= 6) {
+                    handleQuickAction(choice);
+                } else {
+                    switch (choice) {
+                        case 7 -> careerFlow();
+                        case 8 -> familyFlow();
+                        case 9 -> simManagementFlow();
+                        case 0 -> running = false;
+                    }
                 }
             }
         }
@@ -137,12 +154,76 @@ public class ConsoleUI {
         clearScreen();
         printBorder("double", "🏠  THE SIMS - TEXT EDITION  🏠");
         System.out.println();
+
+        // Check if first run - show welcome message
+        if (engine.getSimCount() == 0) {
+            printWelcomeScreen();
+            return;
+        }
+
+        // Check if active sim is dead - show death screen
+        SimCharacter activeSim = engine.getActiveSim();
+        if (activeSim != null && !activeSim.isAlive()) {
+            printDeathScreen();
+            return;
+        }
+
+        // Normal dashboard
         printStatusCard();
         System.out.println();
         printQuickActions();
         System.out.println();
         printWarnings();
         printFooterMenu();
+    }
+
+    private void printWelcomeScreen() {
+        printBorder("section", "WELCOME TO THE SIMS!");
+        System.out.println("│" + " ".repeat(62) + "│");
+        System.out.println("│  " + CYAN + "Welcome to The Sims - Text Edition!" + RESET + " ".repeat(24) + "│");
+        System.out.println("│" + " ".repeat(62) + "│");
+        System.out.println("│  " + WHITE + "Create your first Sim to begin your journey." + RESET + " ".repeat(16) + "│");
+        System.out.println("│  " + WHITE + "Manage their needs, build a career, and live life!" + RESET + " ".repeat(10) + "│");
+        System.out.println("│" + " ".repeat(62) + "│");
+        printBorder("bottom", "");
+        System.out.println();
+        System.out.println(GREEN + BOLD + "9) 👤 Create Your First Sim" + RESET);
+        System.out.println("0) 🚪 Quit Game");
+        System.out.println();
+    }
+
+    private void printDeathScreen() {
+        SimCharacter sim = engine.getActiveSim();
+        if (sim == null) return;
+
+        printBorder("section", "");
+        System.out.println("│" + " ".repeat(62) + "│");
+        System.out.println("│" + " ".repeat(25) + RED + BOLD + "💀 R.I.P. 💀" + RESET + " ".repeat(25) + "│");
+        System.out.println("│" + " ".repeat(62) + "│");
+        System.out.printf("│" + " ".repeat(15) + RED + BOLD + "%s has passed away..." + RESET + "%s│\n",
+            sim.getName(),
+            " ".repeat(Math.max(0, 29 - sim.getName().length())));
+        System.out.println("│" + " ".repeat(62) + "│");
+        System.out.println("│  " + GRAY + "Their life has come to an end. They can no longer" + RESET + " ".repeat(11) + "│");
+        System.out.println("│  " + GRAY + "perform any actions." + RESET + " ".repeat(40) + "│");
+        System.out.println("│" + " ".repeat(62) + "│");
+        printBorder("bottom", "");
+        System.out.println();
+
+        // Show final status
+        NeedsData needs = getSimNeeds();
+        System.out.println(DIM + "Final Status:" + RESET);
+        System.out.println(DIM + "  Hunger:  " + (needs.hunger <= 0 ? RED + needs.hunger + " (STARVED)" : needs.hunger) + RESET);
+        System.out.println(DIM + "  Energy:  " + (needs.energy <= 0 ? RED + needs.energy + " (EXHAUSTED)" : needs.energy) + RESET);
+        System.out.println(DIM + "  Hygiene: " + needs.hygiene + RESET);
+        System.out.println(DIM + "  Social:  " + needs.social + RESET);
+        System.out.println(DIM + "  Fun:     " + needs.fun + RESET);
+        System.out.println();
+
+        System.out.println(YELLOW + "Options:" + RESET);
+        System.out.println("9) 👤 Manage Sims (switch to another Sim or create new)");
+        System.out.println("0) 🚪 Quit Game");
+        System.out.println();
     }
 
     private void printStatusCard() {
@@ -306,6 +387,17 @@ public class ConsoleUI {
         if (choice < 1 || choice > 6) return;
         if (!ensureHasActiveSim()) return;
 
+        // Check if sim is alive
+        SimCharacter sim = engine.getActiveSim();
+        if (sim != null && !sim.isAlive()) {
+            System.out.println();
+            System.out.printf("%s⚠️  %s is deceased and cannot perform actions.%s\n",
+                RED + BOLD, sim.getName(), RESET);
+            System.out.println(CYAN + "Please switch to another Sim (option 9) or quit (0)." + RESET);
+            pause();
+            return;
+        }
+
         int activityIndex = choice - 1;
         ActivityInfo info = ACTIVITY_METADATA[activityIndex];
 
@@ -320,7 +412,6 @@ public class ConsoleUI {
 
         // Special handling for Work
         if (choice == 6) {
-            SimCharacter sim = engine.getActiveSim();
             if (sim == null || sim.getCareer() == null) {
                 System.out.println();
                 System.out.printf("%s⚠️  No career assigned! Visit Career Management (7)%s\n",
@@ -391,7 +482,18 @@ public class ConsoleUI {
             for (int i = 0; i < names.size(); i++) {
                 String marker = (i == engine.getActiveSimIndex()) ?
                     GREEN + " ★ (active)" + RESET : "";
-                System.out.printf("%d) %s%s\n", i + 1, names.get(i), marker);
+
+                // Check if this sim is dead
+                engine.setActiveSimIndex(i);
+                SimCharacter checkSim = engine.getActiveSim();
+                String deathMarker = (checkSim != null && !checkSim.isAlive()) ?
+                    RED + " 💀 (deceased)" + RESET : "";
+
+                System.out.printf("%d) %s%s%s\n", i + 1, names.get(i), marker, deathMarker);
+            }
+            // Restore original active sim
+            if (engine.getSimCount() > 0) {
+                engine.setActiveSimIndex(Math.min(engine.getActiveSimIndex(), engine.getSimCount() - 1));
             }
 
             System.out.println();
@@ -439,6 +541,15 @@ public class ConsoleUI {
         printHeader("CAREER MANAGEMENT");
 
         if (!ensureHasActiveSim()) return;
+
+        // Check if sim is alive
+        SimCharacter sim = engine.getActiveSim();
+        if (sim != null && !sim.isAlive()) {
+            System.out.println();
+            printError(sim.getName() + " is deceased and cannot manage careers.");
+            pause();
+            return;
+        }
 
         boolean stay = true;
         while (stay) {
@@ -493,6 +604,15 @@ public class ConsoleUI {
         printHeader("FAMILY");
 
         if (!ensureHasActiveSim()) return;
+
+        // Check if sim is alive
+        SimCharacter sim = engine.getActiveSim();
+        if (sim != null && !sim.isAlive()) {
+            System.out.println();
+            printError(sim.getName() + " is deceased and cannot have family interactions.");
+            pause();
+            return;
+        }
 
         boolean stay = true;
         while (stay) {
