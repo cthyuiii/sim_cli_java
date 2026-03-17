@@ -1,226 +1,353 @@
-# Text-Based Sims Game - Family & Career Edition
+# The Sims - Text Edition 🏠
 
-A command-line simulation game where you manage a character's daily life by balancing various needs, managing moods, progressing through a career, and raising a family!
+A text-based life simulation game inspired by The Sims, built with Java as a coursework project for CSC1109 - Object-Oriented Programming at SIT.
 
-## New Features
+## 📋 Table of Contents
+- [Game Overview](#game-overview)
+- [Features](#features)
+- [Installation & Running](#installation--running)
+- [How to Play](#how-to-play)
+- [Game Mechanics](#game-mechanics)
+- [Architecture](#architecture)
 
-### 👶 Family & Procreation System
-Start a family and watch your children grow through life stages!
+---
 
-**Try for Baby:**
-- Costs $100 and requires 50+ social and 40+ energy
-- 70% chance of conception
-- Pregnancy lasts 3 days
-- Maximum of 5 children per family
+## 🎮 Game Overview
 
-**Child Growth Stages:**
-Children automatically age as game days pass:
+Manage your Sim's life in this colorful terminal-based simulation! Keep your Sim alive by managing their needs, building a career, and maintaining relationships. Watch out - neglecting your Sim's needs can lead to death from starvation or exhaustion!
 
-| Stage | Age Range | Needs Care | Description |
-|-------|-----------|------------|-------------|
-| **Baby** 👶 | 0-2 days | Yes | Requires constant care and attention |
-| **Toddler** 🧒 | 3-5 days | Yes | Still needs care but more independent |
-| **Child** 👦 | 6-10 days | No | Independent, no longer needs care |
-| **Teen** 🧑 | 11-15 days | No | Nearly grown up |
-| **Young Adult** 👨 | 16+ days | No | Fully grown |
+**Core Gameplay Loop:**
+1. Monitor your Sim's 5 needs (Hunger, Energy, Hygiene, Social, Fun)
+2. Perform activities to fulfill needs and advance time
+3. Work in a career to earn money
+4. Balance needs with career progression
+5. Avoid death by keeping Hunger and Energy above 0
 
-**Family Management:**
-- **Care for Children**: Spend time with babies and toddlers (costs energy, boosts social and fun)
-- **View Family**: See all your children, their ages, and growth progress
-- **Growth Notifications**: Get notified when children reach new life stages 🎂
-- **Energy Impact**: Babies and toddlers drain energy faster over time
-- **Legacy**: Your children become part of your legacy when the game ends
+---
 
-### 🎭 Mood System
-Your Sim's mood is dynamically calculated based on all needs and affects gameplay:
+## ✨ Features
 
-| Mood | Emoji | Average Needs | Effect |
-|------|-------|---------------|--------|
-| **Ecstatic** | 😄 | 80-100% | Needs degrade 30% slower |
-| **Happy** | 😊 | 60-79% | Needs degrade 10% slower |
-| **Content** | 🙂 | 40-59% | Normal degradation |
-| **Uncomfortable** | 😟 | 25-39% | Needs degrade 30% faster |
-| **Miserable** | 😢 | 0-24% | Needs degrade 60% faster |
-| **Icky** | 🤢 | Hygiene < 20% | Needs degrade 80% faster + Energy drains rapidly |
+### 🎨 Enhanced UI/UX
+- **Color-coded dashboard** - Green (good), Yellow (warning), Red (critical)
+- **Progress bars** - Visual representation of all needs
+- **Real-time status display** - See all stats before making decisions
+- **Smart warnings** - Emergency alerts and recommendations
+- **One-press actions** - Quick access to common activities (Eat, Sleep, etc.)
+- **ASCII art borders** - Beautiful box-drawing characters
 
-**Special Icky Mood Effect:** When hygiene drops below 20%, your Sim enters the "Icky" mood state. This causes energy to drain extremely fast (additional -5 per hour) and all needs degrade 80% faster. Take a shower immediately to recover!
+### 🎯 Gameplay Features
+- **5 Core Needs System** - Hunger, Energy, Hygiene, Social, Fun
+- **Dynamic Mood System** - Mood affects need decay rates
+- **Career System** - 3 career types with promotion paths
+- **Death Mechanics** - Starvation (Hunger ≤ 0) and Exhaustion (Energy ≤ 0)
+- **Family System** - Try for baby and raise children
+- **Time Management** - 24-hour day/night cycle
 
-### 💼 Career System
-Choose from 5 different career paths, each with 3 levels of progression:
+### 🏢 Available Careers
+1. **Shift Jobs** (4-8 hours/shift) - Flexible work hours
+2. **Fixed Time Jobs** (8 hours/shift) - Regular 9-to-5 schedule
+3. **Commission Jobs** (6 hours/shift) - Performance-based pay
 
-#### 1. Fast Food Worker
-- **Level 1:** Crew Member - $40/shift (4 hours)
-- **Level 2:** Shift Leader - $70/shift (4 hours) - *Requires 3 shifts*
-- **Level 3:** Store Manager - $120/shift (4 hours) - *Requires 6 shifts*
+Each career has 3 levels with increasing pay and promotion requirements.
 
-#### 2. Office Worker
-- **Level 1:** Intern - $60/shift (6 hours)
-- **Level 2:** Junior Associate - $100/shift (6 hours) - *Requires 4 shifts*
-- **Level 3:** Senior Manager - $180/shift (6 hours) - *Requires 8 shifts*
+---
 
-#### 3. Programmer
-- **Level 1:** Junior Developer - $80/shift (5 hours)
-- **Level 2:** Software Engineer - $140/shift (5 hours) - *Requires 5 shifts*
-- **Level 3:** Lead Architect - $250/shift (5 hours) - *Requires 10 shifts*
+## 🚀 Installation & Running
 
-#### 4. Artist
-- **Level 1:** Freelance Artist - $50/shift (4 hours)
-- **Level 2:** Gallery Artist - $110/shift (4 hours) - *Requires 4 shifts*
-- **Level 3:** Master Artist - $200/shift (4 hours) - *Requires 9 shifts*
-
-#### 5. Doctor
-- **Level 1:** Medical Intern - $90/shift (8 hours)
-- **Level 2:** Resident Doctor - $160/shift (8 hours) - *Requires 6 shifts*
-- **Level 3:** Chief Surgeon - $300/shift (8 hours) - *Requires 12 shifts*
-
-**Career Progression:** Work shifts to gain experience. When you reach the required number of shifts, you'll automatically get promoted with higher pay!
-
-## Core Features
-
-- **Character Management**: Create and name your Sim
-- **Needs System**: Monitor and maintain 5 core needs:
-  - Hunger (eat to survive)
-  - Energy (sleep to recharge)
-  - Hygiene (shower to stay clean)
-  - Social (interact with others)
-  - Fun (entertainment and activities)
-- **Dynamic Mood System**: Your mood affects how fast needs degrade
-- **Career Progression**: Choose a career, work shifts, and get promotions
-- **Family System**: Have children and watch them grow through life stages
-- **Time-Based Gameplay**: Actions consume time and needs degrade over time
-- **Money System**: Earn money by working and spend it on food and family
-- **Multiple Activities**: 13 different actions to choose from
-- **Game Over Conditions**: Survive as long as possible!
-
-## How to Compile and Run
+### Prerequisites
+- Java Development Kit (JDK) 17 or higher
+- Terminal/Command Prompt with UTF-8 encoding support
 
 ### Compilation
+
+Navigate to the `src` directory and compile all files:
+
 ```bash
 cd src
-javac Game.java SimCharacter.java Career.java Child.java
+javac simsgame/*.java simsgame/**/*.java
+```
+
+Or compile individually by package:
+
+```bash
+javac simsgame/*.java
+javac simsgame/engine/*.java
+javac simsgame/sims/*.java
+javac simsgame/activity/*.java
+javac simsgame/career/*.java
 ```
 
 ### Running the Game
+
+From the `src` directory:
+
 ```bash
-java Game
+java simsgame.Main
 ```
 
-Or use the convenient run script:
-```bash
-./run.sh
-```
+### Troubleshooting
 
-## Gameplay Instructions
+**Emojis not displaying correctly?**
+- Ensure your terminal supports UTF-8 encoding
+- macOS Terminal: Should work out of the box
+- Windows CMD: Use Windows Terminal or enable UTF-8 mode
+- Linux: Most modern terminals support UTF-8
 
-1. **Create Your Character**: Enter a name for your Sim when prompted
-2. **Choose a Career**: Select from 5 different career paths
-3. **Monitor Needs**: Keep an eye on the status bars - don't let them reach 0!
-4. **Watch Your Mood**: Maintain good needs to keep a positive mood
-5. **Work for Promotions**: Complete shifts to gain experience and get promoted
-6. **Start a Family**: Use "Try for Baby" when you have enough money and good stats
-7. **Raise Children**: Care for babies and toddlers, watch them grow up
-8. **Manage Resources**: Balance time, money, and energy to keep your Sim and family thriving
-9. **Build a Legacy**: Survive as long as possible and raise successful children!
+**Colors not showing?**
+- Ensure your terminal supports ANSI color codes
+- Windows users: Use Windows Terminal (not classic CMD)
 
-## Available Actions
+---
 
-| Action | Cost | Time | Effects |
-|--------|------|------|---------|
-| **Snack** | $5 | 1h | +15 Hunger |
-| **Meal** | $15 | 2h | +40 Hunger, +5 Fun |
-| **Feast** | $30 | 3h | +70 Hunger, +15 Fun, +10 Social |
-| **Sleep** | Free | 1-12h | +15 Energy per hour |
-| **Shower** | Free | 1h | +50 Hygiene (cures Icky mood!) |
-| **Socialize** | Free | 2h | +30 Social, +15 Fun |
-| **Play Games** | Free | 2h | +35 Fun |
-| **Watch TV** | Free | 2h | +20 Fun |
-| **Work** | Earn $ | Varies | Gain experience, earn money (energy requirement varies by career) |
-| **Exercise** | Free | 2h | +10 Fun, -20 Energy, -15 Hunger (requires 15+ energy) |
-| **Change Career** | Free | Instant | Switch careers (resets progression) |
-| **Try for Baby** | $100 | 2h | 70% chance of pregnancy, +20 Social, +15 Fun |
-| **Care for Children** | Free | 2h | +20 Social, +10 Fun (requires 20+ energy) |
-| **View Family** | Free | Instant | Display family status and children info |
+## 🎮 How to Play
 
-## Tips for Survival
+### First Launch
 
-### General Tips
-- **Monitor your mood** - A good mood makes survival easier
-- **Work regularly** to earn money for food and family expenses
-- **Sleep before energy drops too low** - you can't work when exhausted
-- **Eat regularly** - starvation leads to game over
-- **Balance your activities** - don't neglect any need for too long
-- **Plan ahead** - some activities take several hours
-- **Watch warnings** - alerts appear when needs drop below 30%
+1. **Create Your Sim**
+   - Press `9` to access Sim Management
+   - Enter your Sim's name
+   - Your Sim starts with:
+     - $100.00 starting money
+     - All needs at 80 (Good condition)
+     - Age 18, unemployed
 
-### Mood Management
-- Keep all needs above 60% to maintain a Happy or Ecstatic mood
-- Good moods slow down need degradation, making survival easier
-- Bad moods accelerate need degradation - recover quickly!
-- **AVOID THE ICKY MOOD** - Shower immediately if hygiene drops below 20%
+2. **The Dashboard**
+   - Top section: Name, Money, Career, Mood, Day/Time
+   - Middle section: 5 needs with color-coded progress bars
+   - Bottom section: 6 quick action buttons
 
-### Career Strategy
-- **Fast Food**: Best for quick money with short shifts
-- **Office**: Balanced option with decent pay and moderate hours
-- **Programmer**: High pay with good work-life balance (recommended!)
-- **Artist**: Creative path with flexible hours
-- **Doctor**: Highest pay but longest shifts (requires high energy)
+### Quick Actions (Main Gameplay)
 
-### Family Strategy
-- **Save money** before trying for a baby ($100 cost)
-- **Maintain high social and energy** for successful conception
-- **Babies drain energy** - sleep more when you have young children
-- **Care for children regularly** to boost social and fun needs
-- **Plan pregnancies** around your work schedule
-- **Watch growth milestones** - children become independent after 5 days
+Press the number to perform an action immediately:
 
-### Energy Requirements for Work
-- Fast Food/Artist: 30+ energy (4 hour shift)
-- Programmer: 35+ energy (5 hour shift)
-- Office: 40+ energy (6 hour shift)
-- Doctor: 50+ energy (8 hour shift)
+1. **🍖 Eat (1h)** - Costs $10.00, +25 Hunger
+2. **⚡ Sleep (8h)** - Free, +40 Energy
+3. **🚿 Shower (1h)** - Free, +30 Hygiene
+4. **👥 Social (2h)** - Free, +25 Social, +10 Fun
+5. **🎮 Play (2h)** - Costs $5.00, +25 Fun, -10 Energy
+6. **💼 Work** - Hours vary by career, earn money
 
-## Game Over Conditions
+### Other Options
 
-The game ends if:
-- Hunger reaches 0 (starvation)
-- Energy reaches 0 (exhaustion)
-- You choose to quit
+7. **💼 Career Management**
+   - Assign a new career
+   - View current career status
+   - Track promotions (auto-promoted after earning experience)
 
-## Starting Resources
+8. **👶 Family Options**
+   - Try for baby (requires good needs)
+   - View family status
 
-- Money: $500
-- All needs: 80/100
-- Start time: Day 1, 8:00 AM
-- Mood: Ecstatic 😄
-- Career: Your choice!
-- Children: 0 (start your family!)
+9. **👤 Manage Sims**
+   - Create new Sims
+   - Switch between Sims
+   - See which Sims are alive/deceased
 
-## Advanced Gameplay
+0. **🚪 Quit Game**
 
-### Building a Dynasty
-Can you survive long enough to see your children grow into young adults? The ultimate challenge is to maintain a successful career while raising multiple children to adulthood.
+---
 
-### Reaching Max Level
-Each career has unique progression requirements. The Programmer and Doctor careers take the longest to max out but offer the highest rewards. Can you reach Level 3 while also raising a family?
+## 🧠 Game Mechanics
 
-### Mood Optimization
-Maintaining an Ecstatic mood (80%+ average needs) significantly extends your survival time. Focus on keeping all needs high rather than letting some drop critically low.
+### Needs System
+
+All needs range from 0-100:
+- **80-100** 🟢 Excellent (Green)
+- **60-79** 🟢 Good (Green)
+- **40-59** 🟡 Okay (Yellow)
+- **20-39** 🟡 Low (Yellow)
+- **0-19** 🔴 CRITICAL (Red)
+
+**Need Decay:**
+- All needs decay over time as you perform activities
+- Mood affects decay rates (Happy = slower decay)
+- Each activity advances time, causing passive decay
+
+### Mood System
+
+Your Sim's mood is calculated from average needs:
+- 😊 **HAPPY** - Average needs > 60 (Green)
+- 😐 **OKAY** - Average needs 40-60 (Yellow)
+- 😰 **STRESSED** - Average needs < 40 (Magenta)
+- 😱 **MISERABLE** - Any need ≤ 10 (Red)
+
+### Death Mechanics ☠️
+
+**Your Sim can die from:**
+
+1. **Starvation**
+   - Hunger reaches 0 and stays at 0 for 1 full day
+   - Warning: Feed your Sim when Hunger drops below 30!
+
+2. **Exhaustion**
+   - Energy reaches 0 and stays at 0 for 1 full day
+   - Warning: Let your Sim sleep when Energy drops below 30!
+
+**When a Sim dies:**
+- 💀 Death screen displays with final needs
+- Cannot perform any actions
+- Must switch to another Sim or create a new one
+- Death is permanent!
 
 ### Money Management
-Balance earning money through work with spending on food and family. Having children costs money upfront, and babies drain your energy, requiring more rest and potentially less work time.
 
-### Multi-Child Families
-Managing multiple children at different life stages adds complexity. Babies and toddlers all drain energy simultaneously, so plan carefully before having multiple young children at once!
+**Earning Money:**
+- Work in a career (press `6`)
+- Pay varies by career type and level
+- Promotions increase pay rate
 
-## Game Statistics to Track
+**Spending Money:**
+- Eating costs $10.00
+- Playing costs $5.00
+- Other activities are free
 
-- Days survived
-- Career level reached
-- Total money earned
-- Work shifts completed
-- Number of children
-- Children's ages and stages
-- Highest mood maintained
-- Legacy score (days survived + children raised)
+**Going Broke:**
+- Can't eat or play if you don't have enough money
+- Actions become grayed out
+- Must work to earn money!
 
-Good luck building your Sim's life and legacy!
+### Time System
+
+- Each activity takes time (shown in hours)
+- Time advances: Day 1, Hour 0 → Day 1, Hour 8 (after 8h sleep)
+- 24-hour cycle (0-23 hours)
+- Days increment when hour goes past 23
+
+### Career Progression
+
+**Getting Promoted:**
+- Work to gain experience points (+10 per shift)
+- Each level requires experience threshold
+- 3 levels total per career
+- Auto-promoted when threshold is met
+- Resets experience after promotion
+
+---
+
+## 🏗️ Architecture
+
+### Package Structure
+
+```
+simsgame/
+├── Main.java                  # Entry point
+├── ConsoleUI.java             # Presentation layer (ANSI colors, menus, input)
+│
+├── engine/
+│   ├── GameEngine.java        # Game state management
+│   ├── GameContext.java       # Time and notification context
+│   └── ActivityRegistry.java  # Activity definitions
+│
+├── sims/
+│   ├── SimCharacter.java      # Sim entity (composition root)
+│   ├── Needs.java             # 5 needs with decay logic
+│   ├── Mood.java              # Mood calculation
+│   ├── Wallet.java            # Money management
+│   ├── Family.java            # Family/children system
+│   └── Child.java             # Child lifecycle
+│
+├── activity/
+│   ├── Activity.java          # Abstract activity
+│   ├── EatActivity.java
+│   ├── SleepActivity.java
+│   ├── ShowerActivity.java
+│   ├── SocialiseActivity.java
+│   ├── PlayActivity.java
+│   └── WorkActivity.java
+│
+└── career/
+    ├── Career.java            # Abstract career
+    ├── CareerPromotion.java   # Promotion logic
+    ├── CareerFactory.java     # Career creation
+    ├── ShiftJob.java
+    ├── FixedTimeJob.java
+    └── CommissionJob.java
+```
+
+### Design Patterns Used
+
+1. **MVC Pattern** - ConsoleUI (View) ↔ GameEngine (Controller) ↔ SimCharacter (Model)
+2. **Composition** - SimCharacter has-a Needs, Mood, Wallet, Career
+3. **Factory Pattern** - CareerFactory creates career instances
+4. **Template Method** - Activity and Career abstract classes
+5. **Strategy Pattern** - Different career types implement work() differently
+
+### OOP Principles
+
+- **Encapsulation** - Private fields with getters/setters
+- **Inheritance** - Activity/Career abstract base classes
+- **Polymorphism** - Different activities/careers via common interface
+- **Abstraction** - GameEngine hides complexity from ConsoleUI
+
+---
+
+## 📊 Game Tips & Strategy
+
+### Survival Tips
+
+1. **Always keep Hunger and Energy above 0** - These can kill you!
+2. **Watch for warnings** - Yellow/Red warnings appear automatically
+3. **Balance work and needs** - Don't work when needs are low
+4. **Sleep is free** - Use sleep to restore Energy without spending money
+5. **Shower is free** - Use shower to maintain Hygiene
+
+### Optimal Strategy
+
+**Early Game (Days 1-3):**
+1. Assign a career immediately (Option 7)
+2. Work to build initial money reserve ($100+)
+3. Keep all needs above 30
+4. Focus on Hunger and Energy (survival needs)
+
+**Mid Game (Days 4-10):**
+1. Work regularly to maintain income
+2. Keep mood HAPPY for slower need decay
+3. Use free activities when possible (Sleep, Shower, Social)
+4. Build toward promotions
+
+**Late Game (Days 10+):**
+1. Maintain high-level career
+2. Balance all 5 needs for optimal mood
+3. Accumulate wealth
+4. Consider family expansion
+
+---
+
+## 🎯 Game Goals
+
+This is a **sandbox survival game** - there's no "winning", but here are some goals:
+
+- ✅ Survive for 30 days
+- ✅ Reach maximum career level (Level 2)
+- ✅ Accumulate $1000+
+- ✅ Maintain HAPPY mood for 10 consecutive days
+- ✅ Raise a child to adulthood
+- ✅ Manage multiple Sims simultaneously
+- ✅ Never let any need drop below 20
+
+---
+
+## 🐛 Known Issues
+
+- Emoji rendering may vary by terminal/font
+- Progress bars may not align perfectly in some terminals
+- Color support required (ANSI codes)
+
+---
+
+## 📝 Credits
+
+**Course:** CSC1109 - Object-Oriented Programming <br>
+**Institution:** Singapore Institute of Technology (SIT) <br>
+**Trimester:** Year 1, Tri 2 <br>
+**Inspired by:** The Sims by Maxis/EA
+
+---
+
+## 📜 License
+
+This is an educational project for coursework purposes.
+
+---
+
+**Enjoy the game and keep your Sim alive! 🎮✨**
