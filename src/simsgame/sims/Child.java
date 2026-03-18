@@ -8,7 +8,7 @@ public class Child {
     private boolean needCare;
 
     public String getName() {
-    return name;
+        return name;
     }
 
     public int getAgeInDays() {
@@ -52,4 +52,7 @@ public class Child {
         }
     }
 
+    public boolean isGrownUp() {
+        return ageInDays >= 14;
+    }
 }

@@ -8,6 +8,7 @@ public class SimCharacter {
 
     private String name;
     private int age;
+    private String gender;
     private int hungerZeroDay = -1;
     private int energyZeroDay = -1;
     private boolean alive = true;
@@ -21,9 +22,10 @@ public class SimCharacter {
     // Aggregation (can change/remove)
     private Career career;
 
-    public SimCharacter(String name) {
+    public SimCharacter(String name, String gender) {
         this.name = name;
         this.age = 18;
+        this.gender = gender;
         this.needs = new Needs();
         this.mood = new Mood();
         this.wallet = new Wallet(100); // starting money
@@ -126,6 +128,10 @@ public class SimCharacter {
 
     public Needs getNeeds() {
         return needs;
+    }
+
+    public String getGender() {
+        return gender;
     }
 
     public Mood getMood() {

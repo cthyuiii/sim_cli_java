@@ -22,10 +22,9 @@ public class EatActivity extends AbstractActivity {
             sim.getNeeds().addHunger(hungerGain);
             context.notify(sim.getName() + " ate a meal (-$" + mealCost + ", +" + hungerGain + " hunger).");
         } else {
-            // fallback if broke
-            int smallGain = Math.max(5, hungerGain / 3);
-            sim.getNeeds().addHunger(smallGain);
-            context.notify(sim.getName() + " couldn't afford a full meal, ate a cheap snack (+" + smallGain + " hunger).");
+            int freeMealGain = 10; // basic fallback food
+            sim.getNeeds().addHunger(freeMealGain);
+            context.notify(sim.getName() + " could not afford a meal, but found free food (+" + freeMealGain + " hunger).");
         }
     }
 }

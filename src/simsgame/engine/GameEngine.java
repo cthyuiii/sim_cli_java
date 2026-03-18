@@ -5,6 +5,7 @@ import java.util.List;
 import simsgame.activity.Activity;
 import simsgame.career.Career;
 import simsgame.career.CareerFactory;
+import simsgame.sims.Child;
 import simsgame.sims.SimCharacter;
 
 /**
@@ -45,8 +46,8 @@ public class GameEngine implements GameContext {
     // Sim Management
     // =====================================================
 
-    public void createSim(String name) {
-        SimCharacter sim = new SimCharacter(name);
+    public void createSim(String name, String gender) {
+        SimCharacter sim = new SimCharacter(name, gender);
         sims.add(sim);
 
         if (activeSimIndex == -1) {
@@ -151,6 +152,10 @@ public class GameEngine implements GameContext {
         SimCharacter sim = getActiveSim();
         if (sim == null) return "No active Sim.";
 
+        if (!sim.getGender().equalsIgnoreCase("Female")) {
+            return sim.getName() + " cannot become pregnant.";
+        }
+
         if (sim.getWallet().getBalance() < 100)  { return "You have insufficient funds to raise a baby!"; }
         
         if (sim.getNeeds().getSocial() < 50 || sim.getNeeds().getEnergy() < 40) { return "You do not feel like trying for a child at the moment.."; }
@@ -181,6 +186,15 @@ public class GameEngine implements GameContext {
         for (int day = previousDay + 1; day <= previousDay + daysPassed; day++) {
             for (SimCharacter sim : sims) {
                 sim.getFamily().onNewDay(day);
+            }
+        }
+        for (SimCharacter sim : sims) {
+            List<Child> grownUps = new ArrayList<>(sim.getFamily().getGrownUpChildren());
+            for (Child child : grownUps) {
+                SimCharacter newSim = new SimCharacter(child.getName(), child.getGender());
+                sims.add(newSim);
+                sim.getFamily().removeChild(child);
+                notify(child.getName() + " has grown up and become a new Sim!");
             }
         }
     }

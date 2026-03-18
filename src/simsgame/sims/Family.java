@@ -13,6 +13,20 @@ public class Family {
     public List<Child> getChildren(){ return children; }
     public boolean isPregnant(){ return pregnant; }
 
+    public List<Child> getGrownUpChildren() {
+        List<Child> grownUps = new ArrayList<>();
+        for (Child child : children) {
+            if (child.isGrownUp()) {
+                grownUps.add(child);
+            }
+        }
+        return grownUps;
+    }
+
+    public void removeChild(Child child) {
+        children.remove(child);
+    }
+
     public String tryForBaby(String name, int currentDay){
         System.out.printf("%s is trying for a baby!", name);
         if (Math.random() * 100 < 70) {
@@ -26,7 +40,7 @@ public class Family {
     }
 
     private void giveBirth(String babyName, int currentDay){
-        pregnant = false;
+        String childName = "Baby" + (children.size() + 1);
         String gender = null;
         if (Math.random() < 0.5) {
             gender = "Male";
@@ -34,6 +48,9 @@ public class Family {
         else { gender = "Female"; }
         Child newChild = new Child(babyName, gender, currentDay);
         children.add(newChild);
+        pregnant = false;
+        pregnancyDay = -1;
+        System.out.println("Congratulations! " + babyName + " was born!");
     }
 
     public void onNewDay(int currentDay){

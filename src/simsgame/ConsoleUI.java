@@ -4,10 +4,10 @@ package simsgame;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import simsgame.engine.GameEngine;
-import simsgame.sims.SimCharacter;
-import simsgame.sims.Needs;
 import simsgame.career.Career;
+import simsgame.engine.GameEngine;
+import simsgame.sims.Needs;
+import simsgame.sims.SimCharacter;
 
 /**
  * ConsoleUI is PRESENTATION ONLY.
@@ -551,7 +551,8 @@ public class ConsoleUI {
     private void createSimFlow() {
         printHeader("CREATE SIM");
         String name = readNonEmptyLine("Enter Sim name: ");
-        engine.createSim(name);
+        String gender = readGender();
+        engine.createSim(name, gender);
 
         // If this is the first sim, auto-select it.
         if (engine.getSimCount() == 1) {
@@ -559,8 +560,17 @@ public class ConsoleUI {
         }
 
         System.out.println();
-        printSuccess("Created Sim: " + name);
+        printSuccess("Created Sim: " + name + " (" + gender + ")");
         pause();
+    }
+
+    private String readGender() {
+        while (true) {
+            String input = readNonEmptyLine("Enter gender (Male/Female): ");
+            if (input.equalsIgnoreCase("male")) return "Male";
+            if (input.equalsIgnoreCase("female")) return "Female";
+            System.out.println("Please enter Male or Female.");
+        }
     }
 
     // =====================================================
@@ -618,12 +628,25 @@ public class ConsoleUI {
         int choice = readInt("Choose a job type: ", 0, options.size());
         if (choice == 0) return;
 
-        String customTitle = readNonEmptyLine("Enter the job title: ");
+        String customTitle = readJobTitle("Enter the job title: ");
 
         String result = engine.assignCareerToActiveSim(choice, customTitle);
         System.out.println();
         printSuccess(result);
         pause();
+    }
+
+    private String readJobTitle(String prompt) {
+        while (true) {
+            String input = readNonEmptyLine(prompt);
+
+            if (!input.matches("[A-Za-z ]+")) {
+                System.out.println("Job title must contain letters only.");
+                continue;
+            }
+
+            return input.trim();
+        }
     }
 
     // =====================================================
