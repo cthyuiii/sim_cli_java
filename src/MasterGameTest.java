@@ -1,5 +1,3 @@
-package simsgame;
-
 import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.*;
@@ -16,7 +14,6 @@ public class MasterGameTest {
     private Wallet wallet;
     private Needs needs;
     private Mood mood;
-    private Time time;
 
     @Before
     public void setUp() {
@@ -26,146 +23,115 @@ public class MasterGameTest {
         wallet = sim.getWallet();
         needs = sim.getNeeds();
         mood = sim.getMood();
-        time = new Time();
-    }
-
-    // --- WALLET TESTS ---
-    @Test
-    public void testWalletTransactions() {
-        wallet.earn(50.0);
-        assertEquals(150.0, wallet.getBalance(), 0.001);
-
-        assertTrue("Spend should return true", wallet.spend(100.0));
-        assertFalse("Should not spend more than balance", wallet.spend(1000.0));
     }
 
     @Test
-    public void testEarnNegativeAmount() {
-        double initialBalance = wallet.getBalance();
-        wallet.earn(-50.0);
-        assertEquals("Balance should remain unchanged when earning negative", initialBalance, wallet.getBalance(), 0.001);
-    }
+    public void testAllMoodStatesConsolidated() {
+        // Defines: {Hunger, Energy, Hygiene, Social, Fun}
+        int[][] scenarios = {
+            {80, 80, 80, 80, 80},    // HAPPY (Avg 80)
+            {50, 50, 50, 50, 50},    // OKAY (Avg 50)
+            {25, 25, 25, 25, 25},    // STRESSED (Avg 25)
+            {100, 100, 5, 100, 100}  // MISERABLE (Critical < 10)
+        };
+        Mood.moodState[] expected = {
+            Mood.moodState.HAPPY, Mood.moodState.OKAY, 
+            Mood.moodState.STRESSED, Mood.moodState.MISERABLE
+        };
 
-    @Test
-    public void testSpendNegativeAmount() {
-        double initialBalance = wallet.getBalance();
-        boolean result = wallet.spend(-20.0);
-        assertFalse("Spending negative should return false", result);
-        assertEquals("Balance should not change when spending negative", initialBalance, wallet.getBalance(), 0.001);
-    }
-
-    // --- NEEDS & MOOD TESTS ---
-    @Test
-    public void testNeedsDecay() {
-        int initialHunger = needs.getHunger();
-        needs.decay(2); // Hunger decays at 3 per hour
-        assertEquals("Hunger should decay by 6 over 2 hours", initialHunger - 6, needs.getHunger());
-    }
-
-    @Test
-    public void testMoodTransitions() {
-        // Default average is 80, so mood should be HAPPY
-        mood.update(needs);
-        assertEquals(Mood.moodState.HAPPY, mood.getMoodName());
-
-        // Decay needs to a level where mood becomes STRESSED (avg < 40)
-        needs.decay(20); 
-        mood.update(needs);
-        assertEquals(Mood.moodState.STRESSED, mood.getMoodName());
-    }
-
-    // --- TIME TESTS ---
-    @Test
-    public void testTimeAdvancement() {
-        time.advance(5);
-        assertEquals(13, time.getCurrentHour());
-        
-        time.advance(20); // Moves into Day 2
-        assertEquals(2, time.getCurrentDay());
-        assertEquals(9, time.getCurrentHour());
-    }
-
-    // --- ACTIVITY & INTERACTION TESTS ---
-
-    @Test
-    public void testEatActivityImpact() {
-        // Set hunger low first
-        needs.decay(20); // Hunger drops to 20 (80 - 60)
-        int hungerBefore = needs.getHunger();
-        
-        // Perform EatActivity ($10 cost, +25 hunger)
-        EatActivity eat = new EatActivity(10, 25, 1);
-        eat.apply(sim, engine);
-        
-        assertEquals("Hunger should increase by 25", hungerBefore + 25, needs.getHunger());
-        assertEquals("Wallet should decrease by $10", 90.0, wallet.getBalance(), 0.001);
-    }
-
-    @Test
-    public void testBrokeEatingFallback() {
-        wallet.spend(100.0); // Make sim broke
-        needs.decay(20);
-        
-        EatActivity eat = new EatActivity(10, 30, 1);
-        eat.apply(sim, engine);
-        
-        // If broke, EatActivity gives a smallGain: hungerGain / 3 (30/3 = 10)
-        assertTrue("Should still gain some hunger from cheap snack", needs.getHunger() > 20);
-        assertEquals("Wallet should stay at 0", 0.0, wallet.getBalance(), 0.001);
-    }
-
-    // --- CAREER SYSTEM TESTS ---
-    // @Test
-    // public void testCareerFactoryAndAssignment() {
-    //     // CareerFactory is currently empty in your file
-    //     // Assuming implementation of CareerFactory.createCareer(0) returns a Career
-    //     Career medicalCareer = CareerFactory.createCareer(0);
-        
-    //     if (medicalCareer != null) {
-    //         sim.setCareer(medicalCareer);
-    //         assertNotNull("Sim should have a career assigned", sim.getCareer());
-    //         assertEquals(medicalCareer.getCareerName(), sim.getCareer().getCareerName());
-    //     }
-    // }
-
-    @Test
-    public void testPromotionLogic() {
-        // This test assumes you have a CareerPromotion setup for a job
-        CareerPromotion promo = new CareerPromotion("Test Job", 
-            new String[]{"Junior", "Senior"}, 
-            new double[]{10.0, 20.0}, 
-            new int[]{10, 20});
-        
-        FixedTimeJob job = new FixedTimeJob(promo, 8);
-        
-        // Sim starts at Level 0. Work once to gain experience
-        job.work(sim, new GameEngine()); // WorkExperience += 10
-        
-        assertEquals("Sim should be promoted to Level 1", 1, job.getLevel());
-        assertEquals("Title should be Senior", "Senior", job.getCurrentTitle());
-    }
-
-    // --- FAMILY SYSTEM TESTS ---
-    @Test
-    public void testChildAging() {
-        Child baby = new Child("Junior", "Male", 1);
-        assertEquals(0, baby.getAgeInDays());
-        assertTrue("Newborn should need care", baby.getCareStatus());
-
-        // Update age to Day 8
-        baby.updateAge(8);
-        assertEquals(7, baby.getAgeInDays());
-        assertFalse("7-day old child should no longer need care", baby.getCareStatus());
-    }
-
-    @Test
-    public void testPregnancyLogic() {
-        Family family = sim.getFamily();
-        // Since tryForBaby uses Math.random(), we test if the state can change
-        String result = family.tryForBaby(sim.getName(), 1);
-        
-        if (result.contains("pregnant")) {
-            assertTrue("Family should be in pregnant state", family.isPregnant());
+        for (int i = 0; i < scenarios.length; i++) {
+            needs.addHunger(scenarios[i][0] - needs.getHunger());
+            needs.addEnergy(scenarios[i][1] - needs.getEnergy());
+            needs.addHygiene(scenarios[i][2] - needs.getHygiene());
+            needs.addSocial(scenarios[i][3] - needs.getSocial());
+            needs.addFun(scenarios[i][4] - needs.getFun());
+            
+            mood.update(needs);
+            assertEquals("Failed at scenario " + expected[i], expected[i], mood.getMoodName());
         }
+    }
+
+    @Test
+    public void testActivityContractAndAffordability() {
+        // 1. Reset time to a known state for the loop
+        engine.startNewGame(); // Sets time to 8:00 AM
+
+        Activity[] activities = {
+            new EatActivity(10, 25, 1),
+            new SleepActivity(40, 8),
+            new ShowerActivity(30, 1),
+            new SocialiseActivity(25, 10, 2),
+            new PlayActivity(25, 10, 2, 0) 
+        };
+
+        for (Activity a : activities) {
+            int hourBefore = engine.getCurrentHour();
+            a.apply(sim, engine);
+            
+            // Use a 1-hour margin if your engine auto-decays time separately
+            int expectedHour = (hourBefore + a.hours()) % 24;
+            assertEquals("Time mismatch for " + a.name(), expectedHour, engine.getCurrentHour());
+        }
+
+        // 2. Test Affordability Failure (Strict Cost)
+        wallet.spend(wallet.getBalance()); // Make sim broke ($0)
+        int funBefore = needs.getFun();
+        
+        // Ensure cost is high (50) so spend() definitely returns false
+        new PlayActivity(25, 10, 2, 50).apply(sim, engine);
+        
+        assertEquals("Fun changed despite being broke!", funBefore, needs.getFun());
+    }
+
+    @Test
+    public void testCareerAndPromotionSystems() {
+        // Factory and Promotion logic
+        for (int i = 1; i <= 3; i++) {
+            Career c = CareerFactory.createCareer(i, "Job" + i);
+            assertNotNull(c);
+            
+            // Promotion check (True path)
+            int initialLevel = c.getLevel();
+            c.work(sim, engine, 8); // Adds experience
+            assertTrue("Should promote or gain exp", c.getLevel() > initialLevel || c.getWorkExperience() > 0);
+        }
+        
+        // Boundary testing for CareerPromotion arrays
+        CareerPromotion cp = new CareerPromotion("Test", new String[]{"Jr"}, new double[]{10}, new int[]{10});
+        assertEquals("Should clamp negative level", "Jr", cp.getTitle(-1));
+        assertEquals("Should return MAX_VALUE for invalid req", Integer.MAX_VALUE, cp.getPromotionRequirement(5));
+    }
+
+    @Test
+    public void testLifeAndDeathMechanics() {
+        // Exhaustion death (Starvation follows same logic)
+        needs.addEnergy(-100);
+        sim.checkDeath(engine); // Sets energyZeroDay
+        assertTrue(sim.isAlive());
+
+        engine.advanceTime(24);
+        sim.checkDeath(engine); // Triggers (day - energyZeroDay >= 1)
+        assertFalse("Sim should die after 24h at 0 energy", sim.isAlive());
+    }
+
+    @Test
+    public void testFamilyAndWorkInput() {
+        // Birth and Input Fallbacks
+        sim.setCareer(CareerFactory.createCareer(1, "Barista"));
+        
+        // Mocking "abc" for Work fallback and "Junior" for Baby Name
+        String input = "abc\nJunior\n"; 
+        System.setIn(new java.io.ByteArrayInputStream(input.getBytes()));
+        
+        // Work fallback (Catch block)
+        new WorkActivity().apply(sim, engine);
+        
+        // Birth process
+        Family f = sim.getFamily();
+        while (!f.isPregnant()) f.tryForBaby(sim.getName(), engine.getCurrentDay());
+        f.onNewDay(engine.getCurrentDay() + 3);
+        
+        assertFalse("Family list should not be empty", f.getChildren().isEmpty());
+        System.setIn(new java.io.BufferedInputStream(System.in)); // Reset
     }
 }

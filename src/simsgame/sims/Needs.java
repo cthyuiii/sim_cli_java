@@ -21,7 +21,7 @@ public class Needs {
     public int getHygiene() { return hygiene; }
     public int getSocial() { return social; }
     public int getFun() { return fun; }
-    public int getAvgStats() { return (hunger + energy + hygiene + social + fun)/5; }
+    public double getAvgStats() { return (hunger + energy + hygiene + social + fun)/5; }
     public String getStatsStr() {
         return String.format("Hunger: %d | Energy: %d | Hygiene: %d | Social: %d | Fun: %d",
                 hunger, energy, hygiene, social, fun);
