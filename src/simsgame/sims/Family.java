@@ -1,7 +1,6 @@
 package simsgame.sims;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Family {
     private List<Child> children = new ArrayList<>(); 
@@ -28,7 +27,12 @@ public class Family {
     }
 
     public String tryForBaby(String name, int currentDay){
+        if (pregnant) {
+            return name + " is already pregnant and cannot try for another baby yet.";
+        }
+
         System.out.printf("%s is trying for a baby!", name);
+
         if (Math.random() * 100 < 70) {
             return "The attempt was unsuccessful. " + name + " is feeling a bit tired, but there's always next time!";
         }
@@ -39,33 +43,29 @@ public class Family {
         }
     }
 
-    private void giveBirth(String babyName, int currentDay){
-        String childName = "Baby" + (children.size() + 1);
-        String gender = null;
-        if (Math.random() < 0.5) {
-            gender = "Male";
-        }
-        else { gender = "Female"; }
-        Child newChild = new Child(babyName, gender, currentDay);
-        children.add(newChild);
+    private Child giveBirth(int currentDay){
         pregnant = false;
         pregnancyDay = -1;
-        System.out.println("Congratulations! " + babyName + " was born!");
+
+        String gender = (Math.random() < 0.5) ? "Male" : "Female";
+        Child newChild = new Child("Baby", gender, currentDay);
+        children.add(newChild);
+        return newChild;
     }
 
-    public void onNewDay(int currentDay){
-        if (pregnant && currentDay - pregnancyDay >= PREGNANCY_DURATION) {
-            Scanner scanner_obj = new Scanner(System.in);
-            System.out.print("Enter a name for the baby: ");
-            String babyName = scanner_obj.nextLine();
+    public List<Child> onNewDay(int currentDay) {
+        List<Child> newborns = new ArrayList<>();
 
-            giveBirth(babyName, currentDay);
-            scanner_obj.close();
+        if (pregnant && currentDay - pregnancyDay >= PREGNANCY_DURATION) {
+            Child baby = giveBirth(currentDay);
+            newborns.add(baby);
         }
 
         for (Child child : children) {
             child.updateAge(currentDay);
         }
+
+        return newborns;
     }
 
     public void careForChildren(){

@@ -61,11 +61,15 @@ public class SimCharacter {
                 ? "Unemployed"
                 : career.getCareerName();
 
+        String pregnancyStatus = family.isPregnant() ? "Pregnant" : "Not Pregnant";
+
         return """
                 Name: %s
                 Age: %d
+                Gender: %s
                 Career: %s
                 Money: $%.2f
+                Pregnancy Status: %s
 
                 Needs:
                 Hunger: %d
@@ -78,8 +82,10 @@ public class SimCharacter {
                """.formatted(
                 name,
                 age,
+                gender,
                 careerName,
                 wallet.getBalance(),
+                pregnancyStatus,
                 needs.getHunger(),
                 needs.getEnergy(),
                 needs.getHygiene(),

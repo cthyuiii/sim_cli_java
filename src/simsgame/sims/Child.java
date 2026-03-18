@@ -10,6 +10,12 @@ public class Child {
     public String getName() {
         return name;
     }
+    
+    public void setName(String name) {
+        if (name != null && !name.trim().isEmpty()) {
+            this.name = name.trim();
+        }
+    }
 
     public int getAgeInDays() {
         return ageInDays;

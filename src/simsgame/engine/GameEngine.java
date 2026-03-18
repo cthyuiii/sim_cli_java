@@ -21,12 +21,14 @@ public class GameEngine implements GameContext {
 
     private List<SimCharacter> sims;
     private int activeSimIndex;
+    private List<Child> pendingNewborns;
 
     private Time time;
     private ActivityRegistry activityRegistry;
 
     public GameEngine() {
         sims = new ArrayList<>();
+        pendingNewborns = new ArrayList<>();
         activeSimIndex = -1;
         time = new Time();
         activityRegistry = new ActivityRegistry();
@@ -38,6 +40,7 @@ public class GameEngine implements GameContext {
 
     public void startNewGame() {
         sims.clear();
+        pendingNewborns.clear();
         activeSimIndex = -1;
         time.reset();
     }
@@ -145,7 +148,7 @@ public class GameEngine implements GameContext {
     }
 
     // =====================================================
-    // Family (Optional)
+    // Family 
     // =====================================================
 
     public String tryForBabyActiveSim() {
@@ -156,11 +159,32 @@ public class GameEngine implements GameContext {
             return sim.getName() + " cannot become pregnant.";
         }
 
-        if (sim.getWallet().getBalance() < 100)  { return "You have insufficient funds to raise a baby!"; }
+        if (sim.getFamily().isPregnant()) {
+            return sim.getName() + " is already pregnant.";
+        }
+
+        if (sim.getWallet().getBalance() < 100)  { 
+            return "You have insufficient funds to raise a baby!"; 
+        }
         
-        if (sim.getNeeds().getSocial() < 50 || sim.getNeeds().getEnergy() < 40) { return "You do not feel like trying for a child at the moment.."; }
+        if (sim.getNeeds().getSocial() < 50 || sim.getNeeds().getEnergy() < 40) { 
+            return "You do not feel like trying for a child at the moment.."; 
+        }
 
         return sim.getFamily().tryForBaby(sim.getName(), time.getCurrentDay());
+    }
+    public boolean hasPendingNewborns() {
+        return !pendingNewborns.isEmpty();
+    }
+
+    public List<Child> getPendingNewborns() {
+        return pendingNewborns;
+    }
+
+    public void nameNewborn(Child child, String name) {
+        if (child != null) {
+            child.setName(name);
+        }
     }
 
     // =====================================================
@@ -181,7 +205,28 @@ public class GameEngine implements GameContext {
             sim.getMood().update(sim.getNeeds());
             sim.checkDeath(this);
         }
+        List<SimCharacter> newSims = new ArrayList<>();
 
+        for (int day = previousDay + 1; day <= previousDay + daysPassed; day++) {
+            for (SimCharacter sim : sims) {
+                List<Child> newborns = sim.getFamily().onNewDay(day);
+                for (Child baby : newborns) {
+                    pendingNewborns.add(baby);
+                    notify("A baby was born! Gender: " + baby.getGender());
+                }
+
+                List<Child> grownUps = new ArrayList<>(sim.getFamily().getGrownUpChildren());
+                for (Child child : grownUps) {
+                    SimCharacter newSim = new SimCharacter(child.getName(), child.getGender());
+                    newSims.add(newSim);
+                    sim.getFamily().removeChild(child);
+                    notify(child.getName() + " has grown up and become a new Sim!");
+                }
+            }
+        }
+
+        sims.addAll(newSims);
+        /* 
         // Daily updates
         for (int day = previousDay + 1; day <= previousDay + daysPassed; day++) {
             for (SimCharacter sim : sims) {
@@ -196,7 +241,7 @@ public class GameEngine implements GameContext {
                 sim.getFamily().removeChild(child);
                 notify(child.getName() + " has grown up and become a new Sim!");
             }
-        }
+        }*/
     }
 
     @Override

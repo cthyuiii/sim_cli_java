@@ -432,10 +432,13 @@ public class ConsoleUI {
         ActivityInfo info = ACTIVITY_METADATA[activityIndex];
 
         // Check affordability
-        if (info.cost > 0 && getSimMoney() < info.cost) {
+        // Allow Eat to proceed even if broke, because EatActivity handles free-food fallback
+        boolean isEatAction = activityIndex == 0;
+
+        if (!isEatAction && info.cost > 0 && getSimMoney() < info.cost) {
             System.out.println();
             System.out.printf("%s⚠️  You can't afford %s (costs %s)%s\n",
-                RED + BOLD, info.name, formatMoney(info.cost), RESET);
+            RED + BOLD, info.name, formatMoney(info.cost), RESET);
             pause();
             return;
         }
@@ -467,6 +470,9 @@ public class ConsoleUI {
         System.out.printf("│ %s%s%s%s│\n",
             CYAN + BOLD, result, RESET + " ".repeat(resultPadding), RESET);
         printBorder("bottom", "");
+
+        // handle baby naming after time advanced
+        handlePendingBirths();
 
         // Time advancement feedback
         int hoursAdvanced = (getCurrentDay() - oldDay) * 24 + (getCurrentHour() - oldHour);
@@ -672,10 +678,11 @@ public class ConsoleUI {
             System.out.println("\n" + BOLD + "Active Sim: " + getActiveSimLabel() + RESET);
             System.out.println();
             System.out.println("1) Try for Baby");
-            System.out.println("2) View Status");
+            System.out.println("2) View Current Sim Status");
+            System.out.println("3) View Family Overview");
             System.out.println("0) Back");
 
-            int choice = readInt("Choose: ", 0, 2);
+            int choice = readInt("Choose: ", 0, 3);
             switch (choice) {
                 case 1 -> {
                     String msg = engine.tryForBabyActiveSim();
@@ -692,9 +699,63 @@ public class ConsoleUI {
                     pause();
                 }
                 case 2 -> showStatusFlow();
+                case 3 -> showFamilyOverview();
                 case 0 -> stay = false;
             }
         }
+    }
+
+    private void showFamilyOverview() {
+
+        printHeader("FAMILY OVERVIEW");
+
+        SimCharacter sim = engine.getActiveSim();
+        if (sim == null) return;
+
+        System.out.println(BOLD + "Active Sim: " + sim.getName() + RESET);
+        System.out.println();
+
+        // Pregnancy status
+        if (sim.getFamily().isPregnant()) {
+            System.out.println(YELLOW + "🤰 Currently Pregnant" + RESET);
+        } else {
+            System.out.println(GRAY + "Not Pregnant" + RESET);
+        }
+
+        System.out.println();
+
+        // Children
+        var children = sim.getFamily().getChildren();
+
+        if (children.isEmpty()) {
+            System.out.println(GRAY + "No children yet." + RESET);
+        } else {
+            System.out.println(CYAN + BOLD + "Children:" + RESET);
+
+            for (var child : children) {
+                System.out.printf(
+                    "👶 %s | Age: %d days | Gender: %s | Needs Care: %s\n",
+                    child.getName(),
+                    child.getAgeInDays(),
+                    child.getGender(),
+                    child.getCareStatus() ? "Yes" : "No"
+                );
+            }
+        }
+
+        System.out.println();
+
+        // Other Sims
+        System.out.println(MAGENTA + BOLD + "Other Sims in World:" + RESET);
+
+        for (String name : engine.getSimNames()) {
+            if (!name.equals(sim.getName())) {
+                System.out.println("👤 " + name);
+            }
+        }
+
+        System.out.println();
+        pause();
     }
 
     // =====================================================
@@ -947,5 +1008,22 @@ public class ConsoleUI {
     private void pause() {
         System.out.print("\n" + DIM + "Press Enter to continue..." + RESET);
         sc.nextLine();
+    }
+
+    private void handlePendingBirths() {
+        if (!engine.hasPendingNewborns()) return;
+
+        for (var baby : engine.getPendingNewborns()) {
+            printHeader("NEW BABY");
+            System.out.println("A baby was born!");
+            System.out.println("Gender: " + baby.getGender());
+
+            String babyName = readNonEmptyLine("Enter a name for the baby: ");
+            engine.nameNewborn(baby, babyName);
+
+            System.out.println("Congratulations! " + babyName + " was born!");
+        }
+
+        engine.getPendingNewborns().clear();
     }
 }
