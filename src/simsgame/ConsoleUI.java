@@ -874,25 +874,6 @@ public class ConsoleUI {
         };
     }
 
-    private int countAnsiCodes(String str) {
-        int count = 0;
-        int i = 0;
-        while (i < str.length()) {
-            if (str.charAt(i) == '\033' && i + 1 < str.length() && str.charAt(i + 1) == '[') {
-                int end = str.indexOf('m', i);
-                if (end != -1) {
-                    count += (end - i + 1);
-                    i = end + 1;
-                } else {
-                    i++;
-                }
-            } else {
-                i++;
-            }
-        }
-        return count;
-    }
-
     // =====================================================
     // Data Fetcher Methods
     // =====================================================
