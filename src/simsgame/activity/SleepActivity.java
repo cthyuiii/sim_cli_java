@@ -4,8 +4,7 @@ import simsgame.engine.GameContext;
 import simsgame.sims.SimCharacter;
 
 /**
- * Sleep Activity
- * Recover energy needs.
+ * Sleep Activity recover energy needs.
  */
 public class SleepActivity extends AbstractActivity {
 
@@ -21,6 +20,9 @@ public class SleepActivity extends AbstractActivity {
         this.energyGain = energyGain;
     }
 
+    // =====================================================
+    // Core behaviour
+    // =====================================================
     /**
      * Executes sleeping action.
      * Increases the Sim's energy level by the defined gain

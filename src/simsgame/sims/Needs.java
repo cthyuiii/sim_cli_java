@@ -23,13 +23,28 @@ public class Needs {
         this.fun = 80;
     }
 
+    // =====================================================
     // Getters
+    // =====================================================
     public int getHunger() { return hunger; }
     public int getEnergy() { return energy; }
     public int getHygiene() { return hygiene; }
     public int getSocial() { return social; }
     public int getFun() { return fun; }
+    
+    // =====================================================
+    // Setters
+    // =====================================================
+    public void addHunger(int value) { hunger = clamp(hunger + value); }
+    public void addEnergy(int value) { energy = clamp(energy + value); }
+    public void addHygiene(int value) { hygiene = clamp(hygiene + value); }
+    public void addSocial(int value) { social = clamp(social + value); }
+    public void addFun(int value) { fun = clamp(fun + value); }
 
+
+    // =====================================================
+    // Core behaviour
+    // =====================================================
     /**
      * Calculates the overall average of all five core needs.
      * Determine the Sim's emotional state.
@@ -41,12 +56,6 @@ public class Needs {
                 hunger, energy, hygiene, social, fun);
     }
     
-    public void addHunger(int value) { hunger = clamp(hunger + value); }
-    public void addEnergy(int value) { energy = clamp(energy + value); }
-    public void addHygiene(int value) { hygiene = clamp(hygiene + value); }
-    public void addSocial(int value) { social = clamp(social + value); }
-    public void addFun(int value) { fun = clamp(fun + value); }
-
     /**
      * Internal helper method to keep need values within the valid 0-100 range.
      * @param value Raw calculated value before bounding.

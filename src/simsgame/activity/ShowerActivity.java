@@ -4,8 +4,7 @@ import simsgame.engine.GameContext;
 import simsgame.sims.SimCharacter;
 
 /**
- * Shower Activity
- * Restores the Sim's hygiene levels without cost.
+ * Shower Activity restores the Sim's hygiene levels without cost.
  */
 public class ShowerActivity extends AbstractActivity {
 
@@ -21,6 +20,9 @@ public class ShowerActivity extends AbstractActivity {
         this.hygieneGain = hygieneGain;
     }
 
+    // =====================================================
+    // Core behaviour
+    // =====================================================
     /**
      * Executes shower action.
      * Increases the Sim's hygiene level by the predefined amount and 

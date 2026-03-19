@@ -16,16 +16,17 @@ public class WorkActivity implements Activity {
     /** Scanner to capture user input for flexible work hours for ShiftJobs. */
     private Scanner scanner = new Scanner(System.in);
 
+    // =====================================================
+    // Getters
+    // =====================================================
     @Override
-    public String name() {
-        return "Work";
-    }
-
+    public String name() { return "Work"; }
     @Override
-    public int hours() {
-        return 0; // handled manually here
-    }
+    public int hours() { return 0; } // handled manually here
 
+    // =====================================================
+    // Core behaviour
+    // =====================================================
     /**
      * Executes work action.
      * If the Sim has a ShiftJob, it prompts for manual hour input. 

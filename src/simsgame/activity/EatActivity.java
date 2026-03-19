@@ -4,8 +4,7 @@ import simsgame.engine.GameContext;
 import simsgame.sims.SimCharacter;
 
 /**
- * Eat Activity
- * Reduces the Sim's funds for hunger.
+ * Eat Activity Reduces the Sim's funds for hunger.
  * Fallback mechanism for Sims who cannot afford a meal.
  */
 public class EatActivity extends AbstractActivity {
@@ -25,6 +24,9 @@ public class EatActivity extends AbstractActivity {
         this.hungerGain = hungerGain;
     }
 
+    // =====================================================
+    // Core behaviour
+    // =====================================================
     /**
      * Executes eating action.
      * If Sim has enough money, meal cost is deducted and full hunger gain is applied. 

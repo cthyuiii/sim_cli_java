@@ -1,7 +1,6 @@
 package simsgame.activity;
 
 /**
- * Activity Abstract Class
  * Stores name and duration of activity in hours
  */
 public abstract class AbstractActivity implements Activity {
@@ -20,6 +19,9 @@ public abstract class AbstractActivity implements Activity {
         this.hours = hours;
     }
 
+    // =====================================================
+    // Getters
+    // =====================================================
     @Override
     public String name() { return name; }
 

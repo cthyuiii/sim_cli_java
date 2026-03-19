@@ -6,6 +6,9 @@ import simsgame.engine.GameContext;
 
 public class SimCharacter {
 
+    // =====================================================
+    // Attributes
+    // =====================================================
     private String name;
     private int age;
     private String gender;
@@ -13,15 +16,25 @@ public class SimCharacter {
     private int energyZeroDay = -1;
     private boolean alive = true;
 
-    // Composition (owned by Sim)
+    // =====================================================
+    // Composition
+    // =====================================================
     private Needs needs;
     private Mood mood;
     private Wallet wallet;
     private Family family;
 
-    // Aggregation (can change/remove)
+   // =====================================================
+    // Aggregation
+    // =====================================================
     private Career career;
 
+    /**
+     * Constructs SimCharacter with name and gender.
+     * Initialises the Sim at age 18 with starting funds and default needs.
+     * @param name Name for new Sim.
+     * @param gender Gender for new Sim.
+     */
     public SimCharacter(String name, String gender) {
         this.name = name;
         this.age = 18;
@@ -33,9 +46,27 @@ public class SimCharacter {
     }
 
     // =====================================================
+    // Getters
+    // =====================================================
+    public String getName() { return name; }
+    public Needs getNeeds() { return needs; }
+    public String getGender() { return gender; }
+    public Mood getMood() { return mood; }
+    public Wallet getWallet() { return wallet; }
+    public Family getFamily() { return family; }
+    public Career getCareer() { return career; }
+    public boolean isAlive() { return alive; }
+
+    // =====================================================
     // Core behaviour
     // =====================================================
-
+    /**
+     * Sim to perform specific activity.
+     * If alive, Sim applies the activity's effects, advances game time, 
+     * and updates their mood based on the resulting need changes.
+     * @param activity Action to be performed.
+     * @param context Printing notifications and advancing time.
+     */
     public void perform(Activity activity, GameContext context) {
         if (!alive) {
             context.notify(name + " is dead and cannot perform actions.");
@@ -54,7 +85,6 @@ public class SimCharacter {
     // =====================================================
     // Status
     // =====================================================
-
     public String getStatusString() {
 
         String careerName = (career == null)
@@ -95,10 +125,11 @@ public class SimCharacter {
         );
     }
 
-    public boolean isAlive() {
-        return alive;
-    }
-
+    /**
+     * Evaluates whether Sim has died from critical neglect.
+     * Sim dies if hunger or energy remains at zero for one full day.
+     * @param context Printing notifications and advancing time.
+     */
     public void checkDeath(GameContext context) {
 
         int day = context.getCurrentDay();
@@ -122,38 +153,6 @@ public class SimCharacter {
             } else {
                 energyZeroDay = -1;
         }
-    }
-
-    // =====================================================
-    // Getters
-    // =====================================================
-
-    public String getName() {
-        return name;
-    }
-
-    public Needs getNeeds() {
-        return needs;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public Mood getMood() {
-        return mood;
-    }
-
-    public Wallet getWallet() {
-        return wallet;
-    }
-
-    public Family getFamily() {
-        return family;
-    }
-
-    public Career getCareer() {
-        return career;
     }
 
     // =====================================================

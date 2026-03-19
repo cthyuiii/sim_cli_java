@@ -17,10 +17,14 @@ public class Wallet {
         this.balance = amount;
     }
 
-    public double getBalance(){
-        return balance;
-    }
+    // =====================================================
+    // Getters
+    // =====================================================
+    public double getBalance(){ return balance; }
 
+    // =====================================================
+    // Core behaviour
+    // =====================================================
     /**
      * Adds money to wallet balance.
      * Includes safety check to ensure only positive amounts earned.

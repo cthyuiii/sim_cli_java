@@ -27,12 +27,18 @@ public class Child {
         this.needCare = true;
     }
 
+    // =====================================================
+    // Getters
+    // =====================================================
     public String getName() { return name; }
     public int getAgeInDays() { return ageInDays; }
     public String getGender() { return gender; }
     public int getBirthDay() { return birthDay; }
     public boolean getCareStatus() { return needCare; }
 
+    // =====================================================
+    // Core behaviour
+    // =====================================================
     /**
      * Updates child's name. 
      * Ensures name is not null or empty before applying.

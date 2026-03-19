@@ -24,10 +24,15 @@ public class Family {
         this.pregnancyDay = -1;
     }
 
+    // =====================================================
     // Getters
+    // =====================================================
     public List<Child> getChildren(){ return children; }
     public boolean isPregnant(){ return pregnant; }
 
+    // =====================================================
+    // Core behaviour
+    // =====================================================
     /**
      * Filters the children list for those who have matured.
      * @return List of Child objects where isGrownUp() is true.

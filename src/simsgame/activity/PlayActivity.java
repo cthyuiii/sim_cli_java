@@ -4,7 +4,7 @@ import simsgame.engine.GameContext;
 import simsgame.sims.SimCharacter;
 
 /**
- * Play activity to increase Fun need.
+ * Play Activity to increase Fun need.
  * Reduces Energy and Money
  */
 public class PlayActivity extends AbstractActivity {
@@ -26,6 +26,9 @@ public class PlayActivity extends AbstractActivity {
         this.cost = cost;
     }
 
+    // =====================================================
+    // Core behaviour
+    // =====================================================
     /**
      * Executes play action.
      * If affordable, update Sim's fun and energy levels and sends 

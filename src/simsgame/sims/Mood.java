@@ -20,8 +20,14 @@ public class Mood {
         this.currentMood = moodState.HAPPY;
     }
 
+    // =====================================================
+    // Getters
+    // =====================================================
     public moodState getMoodName() { return currentMood; }
 
+    // =====================================================
+    // Core behaviour
+    // =====================================================
     /**
      * Updates the current mood based on the provided needs.
      * 1. If any need is critical (<= 10), mood is MISERABLE.

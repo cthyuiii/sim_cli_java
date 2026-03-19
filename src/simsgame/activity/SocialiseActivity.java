@@ -4,8 +4,7 @@ import simsgame.engine.GameContext;
 import simsgame.sims.SimCharacter;
 
 /**
- * Social interaction activity.
- * Increase both the Social and Fun needs.
+ * Social interaction activity increase both the Social and Fun needs.
  */
 public class SocialiseActivity extends AbstractActivity {
 
@@ -24,6 +23,9 @@ public class SocialiseActivity extends AbstractActivity {
         this.funGain = funGain;
     }
 
+    // =====================================================
+    // Core behaviour
+    // =====================================================
     /**
      * Executes socialisation action.
      * Updates the Sim's social and fun levels.
