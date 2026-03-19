@@ -10,29 +10,10 @@ import simsgame.sims.Needs;
 import simsgame.sims.SimCharacter;
 
 /**
- * ConsoleUI is PRESENTATION ONLY.
- * - It prints menus, reads input, and calls GameEngine methods.
- * - It should NOT directly modify SimCharacter, Needs, Wallet, etc.
- *
- * Required GameEngine API (implement these in engine/GameEngine.java):
- *   void startNewGame();                         // reset state if needed
- *   void createSim(String name);                 // add a new sim
- *   int getSimCount();
- *   List<String> getSimNames();                  // names in same order as internal list
- *   int getActiveSimIndex();
- *   void setActiveSimIndex(int index);
- *   String getActiveSimStatus();                 // formatted status string for current sim
- *
- *   List<String> getActivityNames();             // for activity menu display
- *   String performActivity(int activityIndex);   // returns result/summary message (or empty)
- *
- *   List<String> getCareerOptions();             // names like "ShiftJob - Barista", etc.
- *   String assignCareerToActiveSim(int type, String title); // returns result/summary
- *
- *   String tryForBabyActiveSim();                // optional: if you implement family actions
+ * ConsoleUI is the user interface class for the sims game.
+ * It handles all user interactions, including displaying menus and processing input.
  */
 public class ConsoleUI {
-
     // =====================================================
     // ANSI Color Constants
     // =====================================================
@@ -41,7 +22,7 @@ public class ConsoleUI {
     public static final String BOLD = "\033[1m";
     public static final String DIM = "\033[2m";
 
-    // Foreground colors
+    /** Foreground colors */
     public static final String GREEN = "\033[92m";
     public static final String YELLOW = "\033[93m";
     public static final String RED = "\033[91m";
@@ -51,14 +32,11 @@ public class ConsoleUI {
     public static final String WHITE = "\033[97m";
     public static final String GRAY = "\033[90m";
 
-    // Background colors
+    /** Background colors */
     public static final String BG_RED = "\033[101m";
     public static final String BG_GREEN = "\033[102m";
 
-    // =====================================================
-    // Activity Metadata (Hardcoded from ActivityRegistry)
-    // =====================================================
-
+    /** Activity information container to hold metadata for quick actions. */
     private static class ActivityInfo {
         String icon, name, effects;
         int hours, cost;
@@ -68,6 +46,7 @@ public class ConsoleUI {
         }
     }
 
+    /** Activity metadata array that holds each activity's information. */
     private final ActivityInfo[] ACTIVITY_METADATA = {
         new ActivityInfo("🍖", "Eat", 1, 10, "+25 Hunger"),
         new ActivityInfo("⚡", "Sleep", 8, 0, "+40 Energy"),
@@ -81,6 +60,7 @@ public class ConsoleUI {
     // Data Container Class
     // =====================================================
 
+    /** Needs data container to showcase the needs of a SimCharacter. */
     private static class NeedsData {
         int hunger, energy, hygiene, social, fun;
         NeedsData(int h, int e, int hy, int s, int f) {
@@ -91,10 +71,14 @@ public class ConsoleUI {
     // =====================================================
     // Core Fields
     // =====================================================
-
     private final GameEngine engine;
     private final Scanner sc;
 
+    /**
+     * Constructs a ConsoleUI instance with the specified GameEngine.
+     *
+     * @param engine The GameEngine instance to use.
+     */
     public ConsoleUI(GameEngine engine) {
         this.engine = engine;
         this.sc = new Scanner(System.in);
@@ -104,6 +88,7 @@ public class ConsoleUI {
     // Main Loop
     // =====================================================
 
+    /** Main game loop where the game runs until the user quits. */
     public void run() {
         engine.startNewGame();
 
@@ -150,6 +135,9 @@ public class ConsoleUI {
     // Dashboard View
     // =====================================================
 
+    /**
+     * Prints the dashboard view for the active SimCharacter.
+     */
     private void printDashboard() {
         clearScreen();
         printBorder("double", "🏠  THE SIMS - TEXT EDITION  🏠");
@@ -177,6 +165,9 @@ public class ConsoleUI {
         printFooterMenu();
     }
 
+    /**
+     * Prints the welcome screen for new players.
+     */
     private void printWelcomeScreen() {
         printBorder("section", "WELCOME TO THE SIMS!");
         System.out.println("│" + " ".repeat(62) + "│");
@@ -192,6 +183,9 @@ public class ConsoleUI {
         System.out.println();
     }
 
+    /**
+     * Prints the death screen for a deceased SimCharacter.
+     */
     private void printDeathScreen() {
         SimCharacter sim = engine.getActiveSim();
         if (sim == null) return;
@@ -231,12 +225,16 @@ public class ConsoleUI {
         System.out.println(DIM + "  Fun:     " + needs.fun + RESET);
         System.out.println();
 
+        // Next steps for player
         System.out.println(YELLOW + "Options:" + RESET);
         System.out.println("9) 👤 Manage Sims (switch to another Sim or create new)");
         System.out.println("0) 🚪 Quit Game");
         System.out.println();
     }
 
+    /**
+     * Prints the status card for the active SimCharacter.
+     */
     private void printStatusCard() {
         if (!ensureHasActiveSim()) {
             System.out.println(YELLOW + "⚠️  No Sim created. Please create a Sim first (option 9)." + RESET);
@@ -301,6 +299,9 @@ public class ConsoleUI {
         printBorder("bottom", "");
     }
 
+    /**
+     * Prints the quick actions menu for the active SimCharacter.
+     */
     private void printQuickActions() {
         printBorder("section", "QUICK ACTIONS");
 
@@ -351,6 +352,9 @@ public class ConsoleUI {
         printBorder("bottom", "");
     }
 
+    /**
+     * Prints the warnings for the active SimCharacter's needs.
+     */
     private void printWarnings() {
         NeedsData needs = getSimNeeds();
         List<String> criticalNeeds = new ArrayList<>();
@@ -402,6 +406,9 @@ public class ConsoleUI {
         }
     }
 
+    /**
+     * Prints the footer menu with navigation options.
+     */
     private void printFooterMenu() {
         System.out.println();
         System.out.println("7) 💼 Career Management    8) 👶 Family Options    9) 👤 Manage Sims");
@@ -413,6 +420,11 @@ public class ConsoleUI {
     // Quick Action Handler
     // =====================================================
 
+    /**
+     * Handles quick action selection for the active SimCharacter. Activities include Eat, Sleep, Shower, Socialize, Play, and Work. Each activity checks for affordability and special conditions before execution, then provides feedback on the results and time advancement.
+     *
+     * @param choice The selected action choice (1-6).
+     */
     private void handleQuickAction(int choice) {
         if (choice < 1 || choice > 6) return;
         if (!ensureHasActiveSim()) return;
@@ -462,7 +474,7 @@ public class ConsoleUI {
         // Perform activity
         String result = engine.performActivity(activityIndex);
 
-        // Show result
+        // Show result of the action
         System.out.println();
         printBorder("section", "ACTION RESULT");
         int resultLen = result.length();
@@ -497,6 +509,9 @@ public class ConsoleUI {
     // Sim Management Flow
     // =====================================================
 
+    /**
+     * Handles the Sim Management flow, allowing players to view existing Sims, switch active Sims, and create new Sims. The flow includes checks for deceased Sims and provides visual indicators for active and deceased Sims in the list.
+     */
     private void simManagementFlow() {
         clearScreen();
         printBorder("double", "SIM MANAGEMENT");
@@ -539,6 +554,7 @@ public class ConsoleUI {
 
             int choice = readInt("Choose: ", 0, names.size() + 1);
 
+            // Handle choices with checks for deceased sims
             if (choice == 0) {
                 stay = false;
             } else if (choice == names.size() + 1) {
@@ -554,6 +570,9 @@ public class ConsoleUI {
         }
     }
 
+    /**
+     * Handles the creation of a new SimCharacter.
+     */
     private void createSimFlow() {
         printHeader("CREATE SIM");
         String name = readNonEmptyLine("Enter Sim name: ");
@@ -570,6 +589,11 @@ public class ConsoleUI {
         pause();
     }
 
+    /**
+     * Reads the gender input for a new SimCharacter.
+     *
+     * @return The gender as a String ("Male" or "Female").
+     */
     private String readGender() {
         while (true) {
             String input = readNonEmptyLine("Enter gender (Male/Female): ");
@@ -580,9 +604,12 @@ public class ConsoleUI {
     }
 
     // =====================================================
-    // Career Flow (Enhanced)
+    // Career Flow
     // =====================================================
 
+    /**
+     * Handles the career management flow for the active SimCharacter.
+     */
     private void careerFlow() {
         printHeader("CAREER MANAGEMENT");
 
@@ -615,6 +642,9 @@ public class ConsoleUI {
         }
     }
 
+    /**
+     * Handles the assignment of a career to the active SimCharacter.
+     */
     private void assignCareerFlow() {
         printHeader("ASSIGN CAREER");
 
@@ -642,6 +672,11 @@ public class ConsoleUI {
         pause();
     }
 
+    /**
+     * Reads the job title input for a new SimCharacter.
+     *
+     * @return The job title as a String.
+     */
     private String readJobTitle(String prompt) {
         while (true) {
             String input = readNonEmptyLine(prompt);
@@ -656,9 +691,12 @@ public class ConsoleUI {
     }
 
     // =====================================================
-    // Family Flow (Enhanced)
+    // Family Flow
     // =====================================================
 
+    /**
+     * Handles the family management flow for the active SimCharacter.
+     */
     private void familyFlow() {
         printHeader("FAMILY");
 
@@ -705,6 +743,9 @@ public class ConsoleUI {
         }
     }
 
+    /**
+     * Shows the family overview for the active SimCharacter.
+     */
     private void showFamilyOverview() {
 
         printHeader("FAMILY OVERVIEW");
@@ -762,6 +803,9 @@ public class ConsoleUI {
     // Status Flow
     // =====================================================
 
+    /**
+     * Shows the status of the active SimCharacter.
+     */
     private void showStatusFlow() {
         printHeader("ACTIVE SIM STATUS");
 
@@ -775,17 +819,32 @@ public class ConsoleUI {
     // UI Component Methods
     // =====================================================
 
+    /**
+     * Clears the console screen.
+     */
     private void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 
+    /**
+     * Gets the text color for a given need value.
+     *
+     * @param value The need value (0-100).
+     * @return The color code as a String.
+     */
     private String getColorForNeed(int value) {
         if (value > 60) return GREEN;
         if (value > 30) return YELLOW;
         return RED;
     }
 
+    /**
+     * Gets the status label for a given need value.
+     *
+     * @param value The need value (0-100).
+     * @return The status label as a String.
+     */
     private String getNeedStatus(int value) {
         if (value >= 80) return "Excellent";
         if (value >= 60) return "Good";
@@ -794,6 +853,12 @@ public class ConsoleUI {
         return "CRITICAL!";
     }
 
+    /**
+     * Gets the mood icon for a given mood name.
+     *
+     * @param moodName The name of the mood.
+     * @return The mood icon as a String.
+     */
     private String getMoodIcon(String moodName) {
         return switch(moodName.toUpperCase()) {
             case "HAPPY" -> "😊";
@@ -804,6 +869,12 @@ public class ConsoleUI {
         };
     }
 
+    /**
+     * Gets the text color for a given mood.
+     *
+     * @param mood The name of the mood.
+     * @return The text color as a String.
+     */
     private String getMoodColor(String mood) {
         return switch(mood.toUpperCase()) {
             case "HAPPY" -> GREEN;
@@ -814,6 +885,12 @@ public class ConsoleUI {
         };
     }
 
+    /**
+     * Prints a border for a UI section.
+     *
+     * @param type  The type of border (e.g., "double", "section", "bottom", "divider").
+     * @param title The title to display (if any).
+     */
     private void printBorder(String type, String title) {
         if (type.equals("double")) {
             System.out.println("╔══════════════════════════════════════════════════════════════╗");
@@ -833,16 +910,36 @@ public class ConsoleUI {
         }
     }
 
+    /**
+     * Formats a monetary value as a String.
+     *
+     * @param amount The amount to format.
+     * @return The formatted String.
+     */
     private String formatMoney(double amount) {
         return String.format("$%.2f", amount);
     }
 
+    /**
+     * Formats a time value as a String.
+     *
+     * @param hour The hour to format.
+     * @return The formatted String.
+     */
     private String formatTime(int hour) {
         int displayHour = (hour % 12 == 0) ? 12 : hour % 12;
         String ampm = (hour < 12) ? "AM" : "PM";
         return String.format("%d:00 %s", displayHour, ampm);
     }
 
+    /**
+     * Prints a progress bar for a given need.
+     *
+     * @param icon   The icon to display.
+     * @param label  The label for the need.
+     * @param value  The current value of the need.
+     * @param max    The maximum value of the need.
+     */
     private void printProgressBar(String icon, String label, int value, int max) {
         int barWidth = 20;
         int filled = (value * barWidth) / max;
@@ -864,6 +961,12 @@ public class ConsoleUI {
             icon, label, bar.toString(), color, value, RESET, status, " ".repeat(padding));
     }
 
+    /**
+     * Gets the work hours estimate for a given career.
+     *
+     * @param career The career to evaluate.
+     * @return The estimated work hours as a String.
+     */
     private String getWorkHoursEstimate(Career career) {
         String className = career.getClass().getSimpleName();
         return switch(className) {
@@ -878,31 +981,61 @@ public class ConsoleUI {
     // Data Fetcher Methods
     // =====================================================
 
+    /**
+     * Gets the current money balance of the active SimCharacter.
+     *
+     * @return The money balance as a double.
+     */
     private double getSimMoney() {
         SimCharacter sim = engine.getActiveSim();
         return sim == null ? 0.0 : sim.getWallet().getBalance();
     }
 
+    /**
+     * Gets the current career of the active SimCharacter.
+     *
+     * @return The career title as a String.
+     */
     private String getSimCareer() {
         SimCharacter sim = engine.getActiveSim();
         if (sim == null || sim.getCareer() == null) return "Unemployed";
         return sim.getCareer().getCurrentTitle();
     }
 
+    /**
+     * Gets the current mood of the active SimCharacter.
+     *
+     * @return The mood name as a String.
+     */
     private String getSimMood() {
         SimCharacter sim = engine.getActiveSim();
         if (sim == null) return "UNKNOWN";
         return sim.getMood().getMoodName().toString();
     }
 
+    /**
+     * Gets the current day of the simulation.
+     *
+     * @return The current day as an int.
+     */
     private int getCurrentDay() {
         return engine.getCurrentDay();
     }
 
+    /**
+     * Gets the current hour of the simulation.
+     *
+     * @return The current hour as an int.
+     */
     private int getCurrentHour() {
         return engine.getCurrentHour();
     }
 
+    /**
+     * Gets the current needs of the active SimCharacter.
+     *
+     * @return A NeedsData object containing the current needs values.
+     */
     private NeedsData getSimNeeds() {
         SimCharacter sim = engine.getActiveSim();
         if (sim == null) return new NeedsData(0, 0, 0, 0, 0);
@@ -921,6 +1054,11 @@ public class ConsoleUI {
     // Helper Methods
     // =====================================================
 
+    /**
+     * Ensures there is an active SimCharacter.
+     *
+     * @return True if there is an active SimCharacter, false otherwise.
+     */
     private boolean ensureHasActiveSim() {
         if (engine.getSimCount() == 0) {
             return false;
@@ -933,6 +1071,11 @@ public class ConsoleUI {
         return true;
     }
 
+    /**
+     * Gets the label of the active SimCharacter.
+     *
+     * @return The name of the active SimCharacter, or "(none)" if no active Sim exists.
+     */
     private String getActiveSimLabel() {
         if (engine.getSimCount() == 0) return "(none)";
         int idx = engine.getActiveSimIndex();
@@ -941,6 +1084,11 @@ public class ConsoleUI {
         return names.get(idx);
     }
 
+    /**
+     * Prints a header for a UI section.
+     *
+     * @param title The title to display.
+     */
     private void printHeader(String title) {
         clearScreen();
         System.out.println("\n" + CYAN + "========================================");
@@ -948,18 +1096,41 @@ public class ConsoleUI {
         System.out.println("========================================" + RESET);
     }
 
+    /**
+     * Prints a success message.
+     *
+     * @param message The message to display.
+     */
     private void printSuccess(String message) {
         System.out.printf("%s✓ %s%s\n", GREEN + BOLD, message, RESET);
     }
 
+    /**
+     * Prints an error message.
+     *
+     * @param message The message to display.
+     */
     private void printError(String message) {
         System.out.printf("%s⚠️  %s%s\n", RED + BOLD, message, RESET);
     }
 
+    /**
+     * Prints an informational message.
+     *
+     * @param message The message to display.
+     */
     private void printInfo(String message) {
         System.out.printf("%sℹ️  %s%s\n", CYAN, message, RESET);
     }
 
+    /**
+     * Reads an integer from the console within a specified range.
+     *
+     * @param prompt The prompt message to display.
+     * @param min    The minimum acceptable value.
+     * @param max    The maximum acceptable value.
+     * @return The validated integer input.
+     */
     private int readInt(String prompt, int min, int max) {
         while (true) {
             System.out.print(prompt);
@@ -977,6 +1148,12 @@ public class ConsoleUI {
         }
     }
 
+    /**
+     * Reads a non-empty line from the console.
+     *
+     * @param prompt The prompt message to display.
+     * @return The validated non-empty String input.
+     */
     private String readNonEmptyLine(String prompt) {
         while (true) {
             System.out.print(prompt);
@@ -986,11 +1163,17 @@ public class ConsoleUI {
         }
     }
 
+    /**
+     * Pauses the console until the user presses Enter.
+     */
     private void pause() {
         System.out.print("\n" + DIM + "Press Enter to continue..." + RESET);
         sc.nextLine();
     }
 
+    /**
+     * Handles any pending births for the active SimCharacter.
+     */
     private void handlePendingBirths() {
         if (!engine.hasPendingNewborns()) return;
 
