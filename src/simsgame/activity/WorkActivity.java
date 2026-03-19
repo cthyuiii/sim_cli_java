@@ -67,10 +67,10 @@ public class WorkActivity implements Activity {
             sim.getWallet().earn(pay);
         }
 
-        context.advanceTime(hoursWorked);
+        sim.assignBusyTime(hoursWorked);
 
-        context.notify(sim.getName() + " worked " + hoursWorked +
-                " hours as a " + career.getCareerName() +
-                " and earned $" + pay + ".");
+        context.notify(sim.getName() + " started working for " + hoursWorked +
+            " hour(s) as a " + career.getCareerName() +
+            " and will earn $" + Math.round(pay) + ".");
     }
 }

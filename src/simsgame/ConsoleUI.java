@@ -248,6 +248,10 @@ public class ConsoleUI {
         int day = getCurrentDay();
         int hour = getCurrentHour();
         NeedsData needs = getSimNeeds();
+        SimCharacter sim = engine.getActiveSim();
+        String availability = (sim != null && sim.isBusy())
+                ? "Busy for " + sim.getRemainingBusyHours() + "h"
+                : "Available";
 
         printBorder("section", "STATUS CARD");
 
@@ -275,6 +279,12 @@ public class ConsoleUI {
             CYAN, day, RESET,
             CYAN, hour, RESET,
             timeStr, "");
+
+        // Availability
+        System.out.printf("│ Status: %s%-50s%s│\n",
+            (availability.startsWith("Busy") ? YELLOW : GREEN),
+            availability,
+            RESET);
 
         // Mood
         // Visual: "Mood: " (6) + emoji (2) + " " (1) + mood + " " (1)
@@ -440,6 +450,14 @@ public class ConsoleUI {
             return;
         }
 
+        if (sim != null && sim.isBusy()) {
+            System.out.println();
+            System.out.printf("%s⚠️  %s is busy for %d more hour(s).%s\n",
+                YELLOW + BOLD, sim.getName(), sim.getRemainingBusyHours(), RESET);
+            pause();
+            return;
+        }
+
         int activityIndex = choice - 1;
         ActivityInfo info = ACTIVITY_METADATA[activityIndex];
 
@@ -473,6 +491,9 @@ public class ConsoleUI {
 
         // Perform activity
         String result = engine.performActivity(activityIndex);
+        if (result == null || result.isBlank()) {
+            result = "Action completed.";
+        }
 
         // Show result of the action
         System.out.println();
@@ -575,7 +596,7 @@ public class ConsoleUI {
      */
     private void createSimFlow() {
         printHeader("CREATE SIM");
-        String name = readNonEmptyLine("Enter Sim name: ");
+        String name = readPersonName("Enter Sim name: ");
         String gender = readGender();
         engine.createSim(name, gender);
 
@@ -600,6 +621,19 @@ public class ConsoleUI {
             if (input.equalsIgnoreCase("male")) return "Male";
             if (input.equalsIgnoreCase("female")) return "Female";
             System.out.println("Please enter Male or Female.");
+        }
+    }
+
+    private String readPersonName(String prompt) {
+        while (true) {
+            String input = readNonEmptyLine(prompt);
+
+            if (!input.matches("[A-Za-z ]+")) {
+                System.out.println(RED + "Name must contain letters only." + RESET);
+                continue;
+            }
+
+            return input.trim();
         }
     }
 
@@ -718,9 +752,10 @@ public class ConsoleUI {
             System.out.println("1) Try for Baby");
             System.out.println("2) View Current Sim Status");
             System.out.println("3) View Family Overview");
+            System.out.println("4) Care for Children");
             System.out.println("0) Back");
 
-            int choice = readInt("Choose: ", 0, 3);
+            int choice = readInt("Choose: ", 0, 4);
             switch (choice) {
                 case 1 -> {
                     String msg = engine.tryForBabyActiveSim();
@@ -738,6 +773,12 @@ public class ConsoleUI {
                 }
                 case 2 -> showStatusFlow();
                 case 3 -> showFamilyOverview();
+                case 4 -> {
+                    String msg = engine.careForChildrenActiveSim();
+                    System.out.println();
+                    printInfo(msg);
+                    pause();
+                }
                 case 0 -> stay = false;
             }
         }
@@ -1182,7 +1223,7 @@ public class ConsoleUI {
             System.out.println("A baby was born!");
             System.out.println("Gender: " + baby.getGender());
 
-            String babyName = readNonEmptyLine("Enter a name for the baby: ");
+            String babyName = readPersonName("Enter a name for the baby: ");
             engine.nameNewborn(baby, babyName);
 
             System.out.println("Congratulations! " + babyName + " was born!");

@@ -119,11 +119,25 @@ public class GameEngine implements GameContext {
         SimCharacter sim = getActiveSim();
         if (sim == null) return "No active Sim.";
 
+        if (!sim.isAlive()) {
+            return sim.getName() + " is deceased and cannot act.";
+        }
+
+        if (sim.isBusy()) {
+            return sim.getName() + " is busy for " + sim.getRemainingBusyHours() + " more hour(s).";
+        }
+
         Activity activity = activityRegistry.getActivityByIndex(activityIndex);
         if (activity == null) return "Invalid activity.";
 
         // Delegation
         sim.perform(activity, this);
+
+        if (allLivingSimsBusy()) {
+            advanceUntilNextAvailableSim();
+        }
+
+        rotateToNextAvailableSim();
 
         return sim.getName() + " performed: " + activity.name();
     }
@@ -187,6 +201,20 @@ public class GameEngine implements GameContext {
         }
     }
 
+    public String careForChildrenActiveSim() {
+        SimCharacter sim = getActiveSim();
+        if (sim == null) return "No active Sim.";
+
+        if (!sim.isAlive()) return sim.getName() + " is deceased and cannot care for children.";
+
+        if (sim.getFamily().getChildren().isEmpty()) {
+            return "There are no children to care for.";
+        }
+
+        sim.getFamily().careForChildren();
+        return sim.getName() + " cared for the children.";
+    }
+
     // =====================================================
     // Time Handling
     // =====================================================
@@ -215,6 +243,12 @@ public class GameEngine implements GameContext {
                     notify("A baby was born! Gender: " + baby.getGender());
                 }
 
+                List<Child> neglected = new ArrayList<>(sim.getFamily().getNeglectedChildren());
+                for (Child child : neglected) {
+                    sim.getFamily().removeChild(child);
+                    notify("💀 " + child.getName() + " has died due to neglect...");
+                }
+
                 List<Child> grownUps = new ArrayList<>(sim.getFamily().getGrownUpChildren());
                 for (Child child : grownUps) {
                     SimCharacter newSim = new SimCharacter(child.getName(), child.getGender());
@@ -226,22 +260,59 @@ public class GameEngine implements GameContext {
         }
 
         sims.addAll(newSims);
-        /* 
-        // Daily updates
-        for (int day = previousDay + 1; day <= previousDay + daysPassed; day++) {
-            for (SimCharacter sim : sims) {
-                sim.getFamily().onNewDay(day);
+    }
+
+    public boolean allLivingSimsBusy() {
+        boolean hasLivingSim = false;
+
+        for (SimCharacter sim : sims) {
+            if (sim.isAlive()) {
+                hasLivingSim = true;
+                if (!sim.isBusy()) {
+                    return false;
+                }
             }
         }
+
+        return hasLivingSim;
+    }
+
+    public void advanceUntilNextAvailableSim() {
+        if (!allLivingSimsBusy()) return;
+
+        int minHours = Integer.MAX_VALUE;
+
         for (SimCharacter sim : sims) {
-            List<Child> grownUps = new ArrayList<>(sim.getFamily().getGrownUpChildren());
-            for (Child child : grownUps) {
-                SimCharacter newSim = new SimCharacter(child.getName(), child.getGender());
-                sims.add(newSim);
-                sim.getFamily().removeChild(child);
-                notify(child.getName() + " has grown up and become a new Sim!");
+            if (sim.isAlive() && sim.isBusy()) {
+                minHours = Math.min(minHours, sim.getRemainingBusyHours());
             }
-        }*/
+        }
+
+        if (minHours == Integer.MAX_VALUE) return;
+
+        advanceTime(minHours);
+
+        for (SimCharacter sim : sims) {
+            if (sim.isAlive()) {
+                sim.reduceBusyTime(minHours);
+            }
+        }
+    }
+
+    public void rotateToNextAvailableSim() {
+        if (sims.isEmpty()) return;
+
+        int start = activeSimIndex;
+
+        do {
+            activeSimIndex = (activeSimIndex + 1) % sims.size();
+
+            SimCharacter sim = sims.get(activeSimIndex);
+            if (sim.isAlive() && !sim.isBusy()) {
+                return;
+            }
+
+        } while (activeSimIndex != start);
     }
 
     @Override

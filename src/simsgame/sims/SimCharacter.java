@@ -15,6 +15,8 @@ public class SimCharacter {
     private int hungerZeroDay = -1;
     private int energyZeroDay = -1;
     private boolean alive = true;
+    private boolean busy;
+    private int remainingBusyHours;
 
     // =====================================================
     // Composition
@@ -43,6 +45,8 @@ public class SimCharacter {
         this.mood = new Mood();
         this.wallet = new Wallet(100); // starting money
         this.family = new Family();
+        this.busy = false;
+        this.remainingBusyHours = 0;
     }
 
     // =====================================================
@@ -72,11 +76,19 @@ public class SimCharacter {
             context.notify(name + " is dead and cannot perform actions.");
             return;
         }
+        if (busy) {
+            context.notify(name + " is busy for " + remainingBusyHours + " more hour(s).");
+            return;
+        }
         // Apply activity effects
         activity.apply(this, context);
 
         // Advance simulation time
-        context.advanceTime(activity.hours());
+        //context.advanceTime(activity.hours());
+        int duration = activity.hours();
+        if (duration > 0) {
+            assignBusyTime(duration);
+        }
 
         // Update mood after needs changed
         mood.update(needs);
@@ -152,6 +164,32 @@ public class SimCharacter {
                 }
             } else {
                 energyZeroDay = -1;
+        }
+    }
+
+    public boolean isBusy() {
+        return busy;
+    }
+
+    public int getRemainingBusyHours() {
+        return remainingBusyHours;
+    }
+
+    public void assignBusyTime(int hours) {
+        if (hours > 0) {
+            this.busy = true;
+            this.remainingBusyHours = hours;
+        }
+    }
+
+    public void reduceBusyTime(int hours) {
+        if (!busy) return;
+
+        remainingBusyHours -= hours;
+
+        if (remainingBusyHours <= 0) {
+            remainingBusyHours = 0;
+            busy = false;
         }
     }
 

@@ -35,10 +35,8 @@ public abstract class Career {
      * @return The amount of money earned from this work session.
      */
     public double work(SimCharacter sim, GameContext context, int hours) {
-
         workExperience += 10;
         checkPromotion();
-
         return calculatePay(sim, hours);
     }
 

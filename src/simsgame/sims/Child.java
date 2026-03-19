@@ -11,6 +11,7 @@ public class Child {
     private String gender;
     private int birthDay;
     private boolean needCare;
+    private int daysWithoutCare;
 
     /**
      * Constructor for new Child instance.
@@ -25,6 +26,7 @@ public class Child {
         this.gender = gender;
         this.birthDay = currentDay;
         this.needCare = true;
+        this.daysWithoutCare = 0;
     }
 
     // =====================================================
@@ -35,6 +37,7 @@ public class Child {
     public String getGender() { return gender; }
     public int getBirthDay() { return birthDay; }
     public boolean getCareStatus() { return needCare; }
+    public int getDaysWithoutCare() { return daysWithoutCare; }
 
     // =====================================================
     // Core behaviour
@@ -56,6 +59,9 @@ public class Child {
      */
     public void updateCareStatus(boolean care) {
         needCare = care;
+        if (!care) {
+            daysWithoutCare = 0; // Reset counter when care is provided
+        }
     }
 
     /**
@@ -67,7 +73,8 @@ public class Child {
             ", Age: " + ageInDays + " days" +
             ", Gender: " + gender + 
             ", Birthday: Day " + birthDay + 
-            ", Needs Care: " + needCare;
+            ", Needs Care: " + needCare +
+            ", Days Without Care: " + daysWithoutCare;
     }
 
     /**
@@ -77,10 +84,18 @@ public class Child {
      */
     public void updateAge(int currentDay) {
         ageInDays = currentDay - birthDay;
+
+        if (needCare) {
+            daysWithoutCare++;
+        }
         
         if (ageInDays >= 7) {
             needCare = false;
         }
+    }
+
+     public boolean isNeglectedToDeath() {
+        return needCare && daysWithoutCare >= 7;
     }
 
     /**

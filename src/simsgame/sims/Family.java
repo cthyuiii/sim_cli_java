@@ -55,6 +55,16 @@ public class Family {
         children.remove(child);
     }
 
+    public List<Child> getNeglectedChildren() {
+        List<Child> neglected = new ArrayList<>();
+        for (Child child : children) {
+            if (child.isNeglectedToDeath()) {
+                neglected.add(child);
+            }
+        }
+        return neglected;
+    }
+
     /**
      * Attempt for pregnancy for Sim.
      * 30% success rate per attempt.
