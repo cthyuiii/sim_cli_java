@@ -6,8 +6,14 @@ import simsgame.career.ShiftJob;
 import simsgame.engine.GameContext;
 import simsgame.sims.SimCharacter;
 
+/**
+ * Work Activity.
+ * Sim earns money and gains work experience.
+ * Assigned career calculates pay and advance game time based on employment type.
+ */
 public class WorkActivity implements Activity {
 
+    /** Scanner to capture user input for flexible work hours for ShiftJobs. */
     private Scanner scanner = new Scanner(System.in);
 
     @Override
@@ -20,6 +26,14 @@ public class WorkActivity implements Activity {
         return 0; // handled manually here
     }
 
+    /**
+     * Executes work action.
+     * If the Sim has a ShiftJob, it prompts for manual hour input. 
+     * For other careers, retrieves predefined hours. 
+     * Processes the work session through Career object, updates the Sim's wallet, and advances time.
+     * @param sim Sim that is working.
+     * @param context Printing notifications and advancing time.
+     */
     @Override
     public void apply(SimCharacter sim, GameContext context) {
         Career career = sim.getCareer();

@@ -20,17 +20,18 @@ public class MasterGameTest {
     @Before
     public void setUp() {
         engine = new GameEngine();
-        engine.createSim("TestSim", "Female");
-        sim = engine.getActiveSim();
-        wallet = sim.getWallet();
-        needs = sim.getNeeds();
-        mood = sim.getMood();
-        time = new Time();
+        engine.startNewGame(); //
+        engine.createSim("TestSim", "Female"); //
+        sim = engine.getActiveSim(); //
+        wallet = sim.getWallet(); //
+        needs = sim.getNeeds(); //
+        mood = sim.getMood(); //
+        time = new Time(); //
     }
 
     // --- ACTIVITY TESTS ---
     @Test
-    public void testEatActivityFullVsBroke() {
+    public void testEatActivity() {
         needs.addHunger(-50); // Hunger at 30
         EatActivity eat = new EatActivity(10, 30, 1);
         

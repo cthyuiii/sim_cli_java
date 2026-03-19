@@ -2,16 +2,36 @@ package simsgame.sims;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Family Class
+ * Handles pregnancy tracking, childbirth, and the care 
+ * or growth of children within a household.
+ */
 public class Family {
     private List<Child> children = new ArrayList<>(); 
     private boolean pregnant;
     private int pregnancyDay;
     private static final int PREGNANCY_DURATION = 3;
 
+    /**
+     * Constructor for new Family unit.
+     * Initialises an empty list of children 
+     * Sets pregnancy status to false.
+     */
+    public Family() {
+        this.children = new ArrayList<>();
+        this.pregnant = false;
+        this.pregnancyDay = -1;
+    }
+
     // Getters
     public List<Child> getChildren(){ return children; }
     public boolean isPregnant(){ return pregnant; }
 
+    /**
+     * Filters the children list for those who have matured.
+     * @return List of Child objects where isGrownUp() is true.
+     */
     public List<Child> getGrownUpChildren() {
         List<Child> grownUps = new ArrayList<>();
         for (Child child : children) {
@@ -22,10 +42,21 @@ public class Family {
         return grownUps;
     }
 
+    /**
+     * Removes a child from the family, typically when they grow up.
+     * @param child Child object to remove.
+     */
     public void removeChild(Child child) {
         children.remove(child);
     }
 
+    /**
+     * Attempt for pregnancy for Sim.
+     * 30% success rate per attempt.
+     * @param name Sim trying for a baby.
+     * @param currentDay Current day.
+     * @return Message string indicating success or failure.
+     */
     public String tryForBaby(String name, int currentDay){
         if (pregnant) {
             return name + " is already pregnant and cannot try for another baby yet.";
@@ -43,6 +74,11 @@ public class Family {
         }
     }
 
+    /**
+     * Internal logic to generate new child.
+     * @param currentDay Birthday of the child.
+     * @return Newly created Child object.
+     */
     private Child giveBirth(int currentDay){
         pregnant = false;
         pregnancyDay = -1;
@@ -53,6 +89,12 @@ public class Family {
         return newChild;
     }
 
+    /**
+     * Daily updates for family. 
+     * Handles childbirth if pregnancy duration is met and updates child ages.
+     * @param currentDay Current day.
+     * @return List of any newborns born on this day.
+     */
     public List<Child> onNewDay(int currentDay) {
         List<Child> newborns = new ArrayList<>();
 
@@ -68,6 +110,9 @@ public class Family {
         return newborns;
     }
 
+    /**
+     * Fulfills care requirements for all children currently needing it.
+     */
     public void careForChildren(){
         List<Child> childrenNeedingCare = new ArrayList<>();
         for (Child child : children) {
