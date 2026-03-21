@@ -187,6 +187,7 @@ public class GameEngine implements GameContext {
 
         return sim.getFamily().tryForBaby(sim.getName(), time.getCurrentDay());
     }
+
     public boolean hasPendingNewborns() {
         return !pendingNewborns.isEmpty();
     }
@@ -261,6 +262,10 @@ public class GameEngine implements GameContext {
 
         sims.addAll(newSims);
     }
+
+    // =====================================================
+    // Helpers
+    // =====================================================
 
     public boolean allLivingSimsBusy() {
         boolean hasLivingSim = false;

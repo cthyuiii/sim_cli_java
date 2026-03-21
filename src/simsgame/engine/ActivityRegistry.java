@@ -3,7 +3,6 @@ package simsgame.engine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import simsgame.activity.*;
 
 /**
@@ -12,12 +11,16 @@ import simsgame.activity.*;
  */
 public class ActivityRegistry {
 
+    // =====================================================
+    // Fields
+    // =====================================================
+    
     private final List<Activity> activities;
 
     public ActivityRegistry() {
         List<Activity> temp = new ArrayList<>();
 
-        // Tune these numbers to your game balance
+        // Initialize activities here. Order matters for menu display and index resolution.
         temp.add(new EatActivity(10, 25, 1));         // cost $10, +25 hunger, 1 hour
         temp.add(new SleepActivity(40, 8));           // +40 energy, 8 hours
         temp.add(new ShowerActivity(30, 1));          // +30 hygiene, 1 hour
@@ -27,6 +30,10 @@ public class ActivityRegistry {
 
         activities = Collections.unmodifiableList(temp);
     }
+
+    // =====================================================
+    // Getters
+    // =====================================================
 
     public List<Activity> getAllActivities() {
         return activities;

@@ -167,6 +167,10 @@ public class SimCharacter {
         }
     }
 
+    // =====================================================
+    // Busy status control
+    // =====================================================
+
     public boolean isBusy() {
         return busy;
     }
