@@ -281,17 +281,19 @@ public class ConsoleUI {
             timeStr, "");
 
         // Availability
-        System.out.printf("│ Status: %s%-50s%s│\n",
+        int line3Visual = 9 + availability.length() + 1;
+        int statusPadding = Math.max(0, 62 - line3Visual);
+        System.out.printf("│ Status: %s%s%s │\n",
             (availability.startsWith("Busy") ? YELLOW : GREEN),
             availability,
-            RESET);
+            RESET + " ".repeat(statusPadding));
 
         // Mood
         // Visual: "Mood: " (6) + emoji (2) + " " (1) + mood + " " (1)
         String moodIcon = getMoodIcon(mood);
         String moodColor = getMoodColor(mood);
-        int line3Visual = 6 + 2 + 1 + mood.length() + 1;
-        int moodPadding = Math.max(0, 61 - line3Visual);
+        int line4Visual = 6 + 2 + 1 + mood.length() + 1;
+        int moodPadding = Math.max(0, 61 - line4Visual);
         System.out.printf("│ Mood: %s %s%s%s %s│\n",
             moodIcon,
             moodColor + BOLD, mood, RESET,

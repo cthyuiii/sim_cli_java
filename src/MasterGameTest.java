@@ -140,6 +140,7 @@ public class MasterGameTest {
         // WorkActivity handles the Career.work() call and engine time advancement
         WorkActivity work = new WorkActivity();
         work.apply(sim, engine);
+        // sim.perform(work, engine);
 
         // FixedTimeJob (Type 2) uses fixedHours (8) for pay and time
         assertTrue("Wallet should increase after working", wallet.getBalance() > walletBefore);
