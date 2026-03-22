@@ -48,9 +48,15 @@ public class WorkActivity implements Activity {
 
         if (career instanceof ShiftJob) {
             System.out.print("Enter number of hours to work: ");
+            String input = "";
             try {
-                hoursWorked = Integer.parseInt(scanner.nextLine());
-            } catch (Exception e) {
+                if (scanner.hasNextLine()) {
+                    input = scanner.nextLine();
+                    hoursWorked = Integer.parseInt(input);
+                } else {
+                    hoursWorked = 4;
+                }
+            } catch (NumberFormatException e) {
                 hoursWorked = 4;
             }
 

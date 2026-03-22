@@ -31,7 +31,6 @@ public abstract class Career {
      * @param sim The SimCharacter who is working.
      * @param context The game state for any necessary interactions.
      * @param hours The number of hours the Sim will work.
-     * 
      * @return The amount of money earned from this work session.
      */
     public double work(SimCharacter sim, GameContext context, int hours) {

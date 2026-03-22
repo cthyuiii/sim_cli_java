@@ -47,11 +47,6 @@ public class PlayActivity extends AbstractActivity {
 
         sim.getNeeds().addFun(funGain);
         sim.getNeeds().addEnergy(-energyCost);
-
-        if (cost > 0) {
-            context.notify(sim.getName() + " played (-$" + cost + ", +" + funGain + " fun, -" + energyCost + " energy).");
-        } else {
-            context.notify(sim.getName() + " played (+" + funGain + " fun, -" + energyCost + " energy).");
-        }
+        context.notify(sim.getName() + " played (-$" + cost + ", +" + funGain + " fun, -" + energyCost + " energy).");
     }
 }
