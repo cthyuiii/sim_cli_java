@@ -64,7 +64,7 @@ Navigate to the `src` directory and compile all files:
 
 ```bash
 cd src
-javac simsgame/*.java simsgame/**/*.java
+javac -encoding UTF-8 simsgame/*.java
 ```
 
 Or compile individually by package:
