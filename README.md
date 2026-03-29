@@ -33,7 +33,6 @@ Manage your Sim's life in this colorful terminal-based simulation! Keep your Sim
 - **Real-time status display** - See all stats before making decisions
 - **Smart warnings** - Emergency alerts and recommendations
 - **One-press actions** - Quick access to common activities (Eat, Sleep, etc.)
-- **ASCII art borders** - Beautiful box-drawing characters
 
 ### 🎯 Gameplay Features
 - **5 Core Needs System** - Hunger, Energy, Hygiene, Social, Fun
@@ -80,6 +79,12 @@ javac simsgame/career/*.java
 ### Running the Game
 
 From the `src` directory:
+
+```bash
+# Run this first if you are on Windows OS.
+# To ensure CLI is using UTF-8 Encoding
+chcp 65001
+```
 
 ```bash
 java simsgame.Main
@@ -143,7 +148,7 @@ Press the number to perform an action immediately:
    - Switch between Sims
    - See which Sims are alive/deceased
 
-0. **🚪 Quit Game**
+&emsp;&ensp;0. **🚪 Quit Game**
 
 ---
 
@@ -237,6 +242,7 @@ simsgame/
 │   ├── GameEngine.java        # Game state management
 │   ├── GameContext.java       # Time and notification context
 │   └── ActivityRegistry.java  # Activity definitions
+│   └── Time.java              # Time manager
 │
 ├── sims/
 │   ├── SimCharacter.java      # Sim entity (composition root)
@@ -340,6 +346,7 @@ This is a **sandbox survival game** - there's no "winning", but here are some go
 **Course:** CSC1109 - Object-Oriented Programming <br>
 **Institution:** Singapore Institute of Technology (SIT) <br>
 **Trimester:** Year 1, Tri 2 <br>
+**Group 13:** Macarius, Wesley, Yu Xuan, Ann Ya, Kent, Lennon, Jennie <br>
 **Inspired by:** The Sims by Maxis/EA
 
 ---
